@@ -1,0 +1,268 @@
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --aes-color: #e74c3c;
+    --president-color: #2ecc71;
+    --responsable-color: #f39c12;
+    --text-color: #333;
+    --light-gray: #ecf0f1;
+    --medium-gray: #bdc3c7;
+    --dark-gray: #7f8c8d;
+    --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Reset et styles de base */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+.portail-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.25rem;
+    position: relative;
+}
+
+/* En-tête */
+.portail-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInDown 0.6s forwards;
+}
+
+@keyframes fadeInDown {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.portail-header h1 {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.portail-header .subtitle {
+    color: var(--dark-gray);
+    font-size: 1.2rem;
+    font-weight: 400;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Nouveau conteneur vertical */
+.vertical-cards-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    margin: 4rem auto;
+    max-width: 400px;
+}
+
+/* Cartes de candidature */
+.candidature-card {
+    width: 100%;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    transition: var(--transition);
+    cursor: pointer;
+    overflow: hidden;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.candidature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+}
+
+.candidature-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.candidature-card h2 {
+    color: var(--primary-color);
+    margin: 1.5rem 0 1rem;
+    font-size: 1.5rem;
+}
+
+.candidature-card p {
+    color: var(--dark-gray);
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    color: white;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
+}
+
+.candidature-card:hover .card-icon {
+    transform: rotate(15deg) scale(1.1);
+}
+
+.card-footer {
+    margin-top: 1.5rem;
+}
+
+.btn-ghost {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    border-radius: 50px;
+    font-weight: 600;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.candidature-card:hover .btn-ghost {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* Styles spécifiques aux cartes */
+.aes-card {
+    animation-delay: 0.3s;
+}
+
+.aes-card::before {
+    background: var(--aes-color);
+}
+
+.aes-card .card-icon {
+    background: var(--aes-color);
+}
+
+.president-card {
+    animation-delay: 0.5s;
+}
+
+.president-card::before {
+    background: var(--president-color);
+}
+
+.president-card .card-icon {
+    background: var(--president-color);
+}
+
+.responsable-card {
+    animation-delay: 0.7s;
+}
+
+.responsable-card::before {
+    background: var(--responsable-color);
+}
+
+.responsable-card .card-icon {
+    background: var(--responsable-color);
+}
+
+/* Modal */
+.selection-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    animation: modalFadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-50px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--dark-gray);
+    transition: var(--transition);
+}
+
+.close-modal:hover {
+    color: var(--primary-color);
+    transform: rotate(90deg);
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: var(--secondary-color);
+    color: white;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 1.5rem;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(41, 128, 185, 0.3);
+}

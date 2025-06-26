@@ -1,0 +1,165 @@
+/* -------------------------------
+   Styles pour la page de candidature
+   ------------------------------- */
+
+body {
+    background: linear-gradient(to right, #f0f4f8, #d9e2ec);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.form-container {
+    max-width: 550px;
+    background: white;
+    margin: 60px auto;
+    padding: 40px 50px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 26px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #444;
+}
+
+form input[type="text"],
+form select,
+form input[type="file"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 20px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: border-color 0.3s ease;
+}
+
+form input[type="text"]:focus,
+form select:focus,
+form input[type="file"]:focus {
+    border-color: #3182ce;
+    outline: none;
+    background: #fdfefe;
+}
+
+button[type="submit"] {
+    background-color: #3182ce;
+    color: white;
+    padding: 12px 18px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+button[type="submit"]:active {
+    transform: scale(0.98);
+}
+
+.messages {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.messages li {
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.messages .error {
+    background-color: #ffe0e0;
+    color: #a10000;
+    border-left: 4px solid #e53935;
+}
+
+.messages .success {
+    background-color: #e6ffed;
+    color: #157347;
+    border-left: 4px solid #28a745;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .form-container {
+        padding: 30px 25px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+}
+
+
+/* SOLUTION SANS MODIFIER LE HTML */
+
+/* Layout global forcé */
+body {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100vh !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: linear-gradient(to right, #f0f4f8, #d9e2ec) fixed !important;
+}
+
+/* Conteneur formulaire ajusté */
+.form-container {
+    margin: 40px auto 60px !important;
+    flex-grow: 1 !important;
+}
+
+/* Footer sécurisé */
+body > footer.footer {
+    position: relative !important;
+    width: 100% !important;
+    margin-top: auto !important;
+    z-index: 10 !important;
+}
+
+/* Media queries renforcés */
+@media (max-width: 768px) {
+    .form-container {
+        margin: 30px auto 50px !important;
+        width: 90% !important;
+        max-width: none !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-container {
+        margin: 20px auto 40px !important;
+        padding: 25px 20px !important;
+    }
+}

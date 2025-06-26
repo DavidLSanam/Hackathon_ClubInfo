@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.vote-page {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #e6f0ff, #cce0ff);
+  min-height: 100vh;
+}
+
+.vote-container {
+  padding: 3rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.vote-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #003d99;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.vote-subtitle {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.vote-boxes-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.vote-box {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  text-decoration: none;
+  color: #003366;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 280px;
+  box-shadow: 0 4px 15px rgba(0, 61, 153, 0.1);
+}
+
+.vote-box:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0, 61, 153, 0.25);
+}
+
+.vote-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 1rem;
+}
+
+.vote-box h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #004aad;
+  text-align: center;
+}
+
+.vote-box p {
+  font-size: 1rem;
+  color: #555;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .vote-boxes-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .vote-box {
+    width: 100%;
+    max-width: 350px;
+    padding: 1.5rem;
+  }
+
+  .vote-title {
+    font-size: 2.2rem;
+  }
+
+  .vote-icon {
+    width: 60px;
+    height: 60px;
+  }
+}

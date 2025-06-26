@@ -1,0 +1,295 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+:root {
+  --primary: #007bff;
+  --dark: #003366;
+  --light: #f8f9fa;
+  --accent: #17a2b8;
+  --success: #28a745;
+  --danger: #dc3545;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--light);
+  color: #212529;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+/* HERO - NOUVEAU DESIGN */
+.hero {
+  background: linear-gradient(135deg, rgba(0, 56, 101, 0.85) 0%, rgba(0, 123, 255, 0.85) 100%), 
+              url('https://images.unsplash.com/photo-1551524559-8af4e6624178?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80') center center/cover no-repeat;
+  height: 90vh;
+  position: relative;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+}
+
+.hero .overlay {
+  padding: 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-weight: 800;
+  font-size: 3.5rem;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 1s ease-out;
+}
+
+.hero-subtitle {
+  font-weight: 400;
+  font-size: 1.5rem;
+  margin-bottom: 2.5rem;
+  opacity: 0.9;
+  animation: fadeInUp 1.2s ease-out;
+}
+
+/* Bouton principal amélioré */
+.btn-primary {
+  font-weight: 600;
+  font-size: 1.2rem;
+  padding: 0.8rem 2.5rem;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+  transition: all 0.3s ease;
+  background: var(--primary);
+  border: none;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: width 0.3s ease;
+  z-index: -1;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.6);
+}
+
+.btn-primary:hover::before {
+  width: 100%;
+}
+
+/* TITRES */
+.section-title {
+  font-weight: 700;
+  font-size: 2.5rem;
+  color: var(--dark);
+  margin-bottom: 3rem;
+  position: relative;
+  text-align: center;
+}
+
+.section-title::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 5px;
+  background: var(--primary);
+  border-radius: 3px;
+  margin: 15px auto 0;
+  transition: width 0.3s ease;
+}
+
+.section-title:hover::after {
+  width: 120px;
+}
+
+/* FONCTIONNALITÉS */
+#features {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 0;
+}
+
+.feature-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s ease;
+  text-align: center;
+  cursor: default;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+}
+
+.feature-card .icon {
+  font-size: 2.5rem;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover .icon {
+  transform: scale(1.1);
+}
+
+/* ÉTAPES (Comment ça marche) */
+#how-it-works {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 0;
+  background-color: #f9f9f9;
+  border-radius: 1rem;
+}
+
+.step-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s ease;
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  height: 100%;
+}
+
+.step-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.step-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  width: 70px;
+  height: 70px;
+  line-height: 70px;
+  margin: 0 auto 1.5rem;
+  background: rgba(0, 123, 255, 0.1);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.step-card:hover .step-number {
+  background: rgba(0, 123, 255, 0.2);
+  transform: rotate(10deg);
+}
+
+/* SÉCURITÉ */
+#security {
+  padding: 4rem 0;
+}
+
+#security i {
+  margin-top: 2rem;
+  transition: all 0.5s ease;
+}
+
+#security i:hover {
+  transform: rotate(15deg) scale(1.1);
+}
+
+/* ANIMATIONS */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+  .hero {
+    height: 80vh;
+    clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+  }
+  
+  .hero-title {
+    font-size: 2.8rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    height: 70vh;
+    clip-path: polygon(0 0, 100% 0, 100% 97%, 0 100%);
+  }
+  
+  .hero-title {
+    font-size: 2.2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .feature-card,
+  .step-card {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero {
+    height: 60vh;
+  }
+  
+  .hero-title {
+    font-size: 1.8rem;
+  }
+  
+  .btn-primary {
+    font-size: 1rem;
+    padding: 0.6rem 1.8rem;
+  }
+}
