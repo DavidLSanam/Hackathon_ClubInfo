@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/importer_emails_autorises.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="tab-container">
+    <div class="tab-header">
+        <button class="tab-button active" data-tab="import">Importation</button>
+        <button class="tab-button" data-tab="emails">Emails Importés</button>
+        <button class="tab-button" data-tab="stats">Statistiques</button>
+    </div>
+
+    <!-- Onglet Import -->
+    <div id="tab-import" class="tab-content active">
+        <h2>📥 Importer des Emails Autorisés</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="fichier_excel">Fichier Excel (.xlsx)</label>
+            <input type="file" name="fichier_excel" accept=".xlsx" required>
+            <button type="submit">Importer</button>
+        </form>
+    </div>
+
+    <!-- Onglet Emails -->
+    <div id="tab-emails" class="tab-content">
+        <h2>📋 Liste des Emails</h2>
+        <table>
+            <thead>
+                <tr><th>Email</th><th>Classe</th><th>Matricule</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for email in emails %}
+                <tr>
+                    <td>{{ email.email }}</td>
+                    <td>{{ email.classe }}</td>
+                    <td>{{ email.matricule_attribue|default:"-" }}</td>
+                    <td>
+                        <form method="post" action="{% url 'reinitialiser_matricule' email.id %}">
+                            {% csrf_token %}
+                            <button class="action yellow">Réinitialiser</button>
+                        </form>
+                        <form method="post" action="{% url 'supprimer_email_autorise' email.id %}">
+                            {% csrf_token %}
+                            <button class="action red">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">Aucun email trouvé.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Onglet Statistiques -->
+    <div id="tab-stats" class="tab-content">
+        <h2>📊 Statistiques</h2>
+        <p><strong>Total des emails :</strong> {{ total_emails }}</p>
+        {% if dernier_import %}
+        <p><strong>Dernier import (ID) :</strong> {{ dernier_import }}</p>
+        {% endif %}
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+            button.classList.add('active');
+            document.getElementById('tab-' + button.dataset.tab).classList.add('active');
+        });
+    });
+</script>
+{% endblock %}

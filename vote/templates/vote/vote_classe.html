@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h1>Vote Responsable de Classe</h1>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <label for="matricule">Matricule :</label>
+        <input type="text" name="matricule" required>
+
+        <label for="filiere">Filière :</label>
+        <select id="filiere" name="filiere" required>
+            <option value="">Sélectionnez une filière</option>
+            {% for code, nom in filieres %}
+            <option value="{{ code }}">{{ nom }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="classe">Classe :</label>
+        <select id="classe" name="classe" required disabled>
+            <option value="">Choisir la filière d’abord</option>
+        </select>
+
+        <div id="candidats-container" style="display:none; margin-top: 30px;">
+            <h2>Candidats pour Responsable de Classe</h2>
+            <div id="candidats-list"></div>
+        </div>
+
+        <input type="hidden" name="candidat_id" id="candidat_id">
+        <button type="submit" id="submit-vote" disabled>Voter</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const classesParFiliere = {{ classes_par_filiere|safe }};
+const candidats = {{ postes.0.candidats.all|json_script:"candidats-json" }};
+
+document.getElementById("filiere").addEventListener("change", function() {
+    const selectedFiliere = this.value;
+    const classeSelect = document.getElementById("classe");
+    classeSelect.innerHTML = '<option value="">Sélectionnez une classe</option>';
+    if (classesParFiliere[selectedFiliere]) {
+        classesParFiliere[selectedFiliere].forEach(classe => {
+            const opt = document.createElement("option");
+            opt.value = classe;
+            opt.textContent = classe;
+            classeSelect.appendChild(opt);
+        });
+        classeSelect.disabled = false;
+    } else {
+        classeSelect.disabled = true;
+    }
+});
+
+document.getElementById("classe").addEventListener("change", function () {
+    const classeChoisie = this.value;
+    const candidats = JSON.parse(document.getElementById("candidats-json").textContent);
+    const candidatsClasse = candidats.filter(c => c.classe === classeChoisie);
+    const container = document.getElementById("candidats-container");
+    const list = document.getElementById("candidats-list");
+
+    list.innerHTML = "";
+    if (candidatsClasse.length > 0) {
+        candidatsClasse.forEach(c => {
+            const btn = document.createElement("button");
+            btn.textContent = c.nom;
+            btn.type = "button";
+            btn.onclick = function () {
+                document.getElementById("candidat_id").value = c.id;
+                document.getElementById("submit-vote").disabled = false;
+                alert(`Vous avez sélectionné ${c.nom}`);
+            };
+            list.appendChild(btn);
+        });
+        container.style.display = "block";
+    } else {
+        container.style.display = "none";
+    }
+});
+</script>
+{% endblock %}

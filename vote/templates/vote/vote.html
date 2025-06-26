@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Page de Vote | Élections ENSAE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/vote.css' %}">
+{% endblock %}
+{% block body_class %}vote-page{% endblock %}
+
+{% block content %}
+<div class="vote-container d-flex flex-column align-items-center justify-content-center text-center">
+  <div class="mb-5">
+    <h1 class="vote-title">Élections ENSAE 2025</h1>
+    <p class="vote-subtitle">Choisissez le type d’élections auquel vous souhaitez participer</p>
+  </div>
+
+  <div class="row justify-content-center g-4 w-100">
+    <div class="col-md-4">
+      <a href="{% url 'vote_aes' %}" class="vote-box shadow-lg">
+        <img src="{% static 'images/logo_ensae.png' %}" alt="Élections AES" class="vote-icon">
+        <h3>Élections AES</h3>
+        <p>Votez pour les représentants de l’Amicale des Élèves</p>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'vote_club' %}" class="vote-box shadow-lg">
+        <img src="{% static 'images/logo_ensae.png' %}" alt="Élections Clubs" class="vote-icon">
+        <h3>Présidents de Clubs</h3>
+        <p>Soutenez votre club en choisissant son dirigeant</p>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="{% url 'vote_responsables_classe' %}" class="vote-box shadow-lg">
+        <img src="{% static 'images/logo_ensae.png' %}" alt="Élections Classe" class="vote-icon">
+        <h3>Responsables de Classe</h3>
+        <p>Élisez les représentants de votre classe</p>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

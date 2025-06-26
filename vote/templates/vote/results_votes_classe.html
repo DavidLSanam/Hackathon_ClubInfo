@@ -1,0 +1,655 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --primary: #4361ee;
+    --secondary: #3f37c9;
+    --accent: #4895ef;
+    --dark: #2b2d42;
+    --light: #f8f9fa;
+    --success: #4cc9f0;
+    --warning: #f72585;
+}
+
+.results-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+.total-votes {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-top: 0.5rem;
+}
+
+.other-candidates {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.other-candidates h4 {
+    font-size: 1rem;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+}
+
+.other-candidates ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.other-candidates li {
+    padding: 0.3rem 0;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.header-section {
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: fadeIn 1s ease-out;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 1.5rem;
+    position: relative;
+    display: inline-block;
+}
+
+.page-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 2px;
+}
+
+.filters-container {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+.filter-group {
+    min-width: 300px;
+    position: relative;
+}
+
+.filter-label {
+    display: block;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+    color: var(--dark);
+    font-size: 1.1rem;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    background-color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1.5rem center;
+    background-size: 1em;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.filter-select:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+}
+
+.filter-select:hover {
+    border-color: var(--accent);
+}
+
+/* Icône personnalisée */
+.filter-icon {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(50%);
+    pointer-events: none;
+    color: var(--primary);
+}
+
+/* Reste du CSS inchangé */
+.participation-section {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+    color: var(--dark);
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.stat-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 1rem;
+}
+
+.progress-container {
+    height: 25px;
+    background: #f1f3f5;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 12px;
+    position: relative;
+    transition: width 1.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.progress-text {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.stat-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.poste-section {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.poste-title {
+    color: var(--dark);
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.poste-title span {
+    font-size: 1rem;
+    color: var(--primary);
+    background: rgba(67, 97, 238, 0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+}
+
+.candidates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.candidate-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.candidate-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.candidate-header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 1.5rem;
+    text-align: center;
+    color: white;
+}
+
+.classe-name {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
+
+.candidate-body {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.candidate-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    margin: -70px auto 1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    background: white;
+}
+
+.avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: bold;
+    margin: -70px auto 1rem;
+    border: 4px solid white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.candidate-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+}
+
+.vote-count {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin: 1rem 0;
+}
+
+.results-chart {
+    height: 200px;
+    margin-top: 1rem;
+}
+
+.winner-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #ffd700;
+    color: #8a6d00;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    animation: pulse 2s infinite;
+}
+
+.no-winner {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.no-results-message {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    margin: 2rem auto;
+    max-width: 600px;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+    .filter-group {
+        min-width: 250px;
+    }
+    
+    .filter-select {
+        padding: 0.8rem 1rem;
+    }
+    
+    .candidates-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="results-container">
+    <div class="header-section animate__animated animate__fadeIn">
+        <h1 class="page-title">Résultats des Élections</h1>
+        
+        <!-- Filtre des postes uniquement -->
+        <div class="filters-container">
+            <div class="filter-group">
+                <label for="poste-filter" class="filter-label">Filtrer par poste</label>
+                <select id="poste-filter" class="filter-select">
+                    <option value="all">Tous les postes</option>
+                    {% for resultat in resultats %}
+                        <option value="poste-{{ resultat.poste.id }}">{{ resultat.poste.nom }}</option>
+                    {% endfor %}
+                </select>
+                <i class="fas fa-chevron-down filter-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Participation -->
+    <div class="participation-section">
+        <h2 class="section-title">Participation aux Votes</h2>
+        <div class="stats-grid">
+            {% for stat in participation_stats %}
+            <div class="stat-card">
+                <h3 class="stat-title">{{ stat.classe_nom }}</h3>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: {{ stat.participation }}%">
+                        <span class="progress-text">{{ stat.participation }}%</span>
+                    </div>
+                </div>
+                <div class="stat-details">
+                    <span>{{ stat.voters_count }} votants</span>
+                    <span>{{ stat.total_voters }} inscrits</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Résultats par poste -->
+    {% for resultat in resultats %}
+    <div class="poste-section" id="poste-{{ resultat.poste.id }}">
+        <h2 class="poste-title">
+            {{ resultat.poste.nom }}
+            <span>{{ resultat.classes|length }} classes</span>
+        </h2>
+        
+        <div class="classes-grid">
+            {% for classe in resultat.classes %}
+            <div class="candidate-card classe-{{ classe.classe_code }}" data-poste="{{ resultat.poste.id }}">
+                <div class="candidate-header">
+                    <div class="classe-name">{{ classe.classe_nom }}</div>
+                    <div class="total-votes">Total votes: {{ classe.total_votes }}</div>
+                </div>
+                
+                {% if classe.gagnant %}
+                    <div class="candidate-body">
+                        {% if classe.gagnant.photo %}
+                            <img src="{{ classe.gagnant.photo.url }}" alt="{{ classe.gagnant.nom }}" class="candidate-photo">
+                        {% else %}
+                            <div class="avatar-placeholder">{{ classe.gagnant.nom|first|upper }}</div>
+                        {% endif %}
+                        
+                        <h3 class="candidate-name">{{ classe.gagnant.nom }}</h3>
+                        <div class="vote-count">
+                            {{ classe.gagnant.vote_count }} votes ({{ classe.gagnant.percentage }}%)
+                        </div>
+                        
+                        <div class="winner-badge">
+                            <i class="fas fa-trophy"></i> Élu
+                        </div>
+                        
+                        <!-- Liste des autres candidats -->
+                        <div class="other-candidates">
+                            <h4>Autres candidats:</h4>
+                            <ul>
+                                {% for candidat in classe.candidats %}
+                                    {% if candidat.nom != classe.gagnant.nom %}
+                                        <li>{{ candidat.nom }}: {{ candidat.vote_count }} votes ({{ candidat.percentage }}%)</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="no-winner">
+                        <p>Aucun candidat élu</p>
+                        {% if classe.candidats %}
+                            <div class="other-candidates">
+                                <h4>Candidats:</h4>
+                                <ul>
+                                    {% for candidat in classe.candidats %}
+                                        <li>{{ candidat.nom }}: {{ candidat.vote_count }} votes ({{ candidat.percentage }}%)</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation GSAP pour les sections
+    if (typeof gsap !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+        
+        gsap.utils.toArray('.poste-section').forEach(section => {
+            gsap.to(section, {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                }
+            });
+        });
+        
+        // Animation des barres de progression
+        gsap.utils.toArray('.progress-bar').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            
+            gsap.to(bar, {
+                width: width,
+                duration: 1.8,
+                delay: 0.3,
+                ease: "elastic.out(1, 0.5)"
+            });
+        });
+    }
+
+    // Filtrage des résultats (uniquement par poste maintenant)
+    const posteFilter = document.getElementById('poste-filter');
+
+    function filterResults() {
+        const selectedPoste = posteFilter.value;
+        let hasVisibleResults = false;
+        
+        // Masquer toutes les sections de poste d'abord
+        document.querySelectorAll('.poste-section').forEach(section => {
+            section.style.display = 'none';
+        });
+        
+        // Parcourir toutes les cartes de candidats
+        document.querySelectorAll('.candidate-card').forEach(card => {
+            const cardPoste = card.dataset.poste;
+            
+            // Vérifier si la carte correspond au filtre
+            const posteMatches = selectedPoste === 'all' || `poste-${cardPoste}` === selectedPoste;
+            
+            if (posteMatches) {
+                // Afficher la section parente du poste
+                const posteSection = card.closest('.poste-section');
+                posteSection.style.display = 'block';
+                
+                // Afficher la carte
+                card.style.display = 'block';
+                hasVisibleResults = true;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Gérer l'affichage si aucun résultat
+        const noResultsMsg = document.querySelector('.no-results-message');
+        if (!hasVisibleResults) {
+            if (!noResultsMsg) {
+                const msg = document.createElement('div');
+                msg.className = 'no-results-message';
+                msg.innerHTML = '<h3>Aucun résultat trouvé</h3><p>Essayez de modifier vos critères de filtrage</p>';
+                document.querySelector('.results-container').appendChild(msg);
+            }
+        } else if (noResultsMsg) {
+            noResultsMsg.remove();
+        }
+    }
+
+    // Initialiser l'événement
+    posteFilter.addEventListener('change', filterResults);
+
+    // Appliquer le filtre au chargement
+    filterResults();
+
+    // Initialiser les graphiques
+    function initializeCharts() {
+        document.querySelectorAll('.results-chart canvas').forEach(canvas => {
+            const ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Candidat 1', 'Candidat 2', 'Candidat 3'],
+                    datasets: [{
+                        label: 'Votes',
+                        data: [12, 19, 3],
+                        backgroundColor: [
+                            'rgba(67, 97, 238, 0.7)',
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(75, 192, 192, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(67, 97, 238, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    }
+    
+    initializeCharts();
+    
+    // Effet de survol sur les cartes
+    document.querySelectorAll('.candidate-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            if (typeof gsap !== 'undefined') {
+                gsap.to(card, {
+                    y: -10,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            if (typeof gsap !== 'undefined') {
+                gsap.to(card, {
+                    y: 0,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

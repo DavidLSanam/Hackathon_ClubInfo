@@ -1,0 +1,33 @@
+# ⛔️ Fichiers Python compilés
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ⚙️ Fichiers temporaires de logs
+*.log
+debug.log
+
+# 🗂️ Base de données locale
+db.sqlite3
+
+# 📊 Fichiers Excel, CSV ou autres données brutes
+*.xlsx
+*.csv
+*.tsv
+
+# 🖼️ Fichiers média générés par l'utilisateur
+/media/
+
+# 📁 Environnement virtuel (à adapter si tu utilises venv, env, .venv, etc.)
+env/
+
+# 🧬 Fichiers de migrations (tu peux commenter cette ligne si tu veux les suivre)
+**/migrations/
+!*/migrations/__init__.py
+
+# ⚙️ VS Code
+.vscode/
+
+# 🔐 Fichiers sensibles
+.env
+secrets.json

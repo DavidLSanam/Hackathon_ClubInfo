@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Connexion Électeur{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+{% block body_class %}vote-page{% endblock %}
+
+{% block content %}
+<div class="login-container">
+  <form method="POST">
+    {% csrf_token %}
+    <h2>🗳️ Connexion au vote</h2>
+    {% if messages %}
+      <div class="error">
+        {% for message in messages %}
+          {{ message }}
+        {% endfor %}
+      </div>
+    {% endif %}
+    <input type="text" name="matricule" placeholder="Matricule" required>
+    <button type="submit">Se connecter</button>
+    <p class="footer-text">Votre vote est important et confidentiel.</p>
+  </form>
+</div>
+{% endblock %}

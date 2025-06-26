@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Élections des Présidents de Clubs | ENSAE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/vote_club.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="vote-club-container">
+    <!-- Stockage des URLs et tokens -->
+    <div id="vote-data" 
+         data-submit-url="{% url 'vote_club_submit' %}"
+         data-csrf-token="{{ csrf_token }}"
+         style="display:none;"></div>
+    
+    <div class="vote-header animate__animated animate__fadeIn">
+        <h1 class="vote-title">Élections des Présidents de Clubs</h1>
+        <p class="vote-subtitle">Choisissez les futurs présidents de vos clubs préférés</p>
+        
+        <div class="vote-stats-link">
+            <a href="{% url 'results_club' %}" class="stats-button">
+                <i class="fas fa-chart-bar"></i> Voir les statistiques
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} animate__animated animate__fadeIn">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="clubs-grid">
+        {% for club in clubs %}
+        <div class="club-card animate__animated animate__fadeInUp" data-club-id="{{ club.id }}">
+            <div class="club-header">
+                {% if club.logo %}
+                <img src="{{ club.logo.url }}" alt="{{ club.nom }}" class="club-logo">
+                {% else %}
+                <div class="club-logo-placeholder">
+                    <i class="fas fa-users"></i>
+                </div>
+                {% endif %}
+                <h3 class="club-name">{{ club.nom }}</h3>
+                <p class="club-description">{{ club.description|truncatechars:100 }}</p>
+            </div>
+
+            <div class="candidates-container">
+                <h4 class="candidates-title">Candidats :</h4>
+                <div class="candidates-list">
+                    {% for candidat in club.candidats %}
+                    <div class="candidate-card" data-candidate-id="{{ candidat.id }}">
+                        <div class="candidate-photo-container">
+                            <img src="{{ candidat.photo.url }}" alt="{{ candidat.nom_complet }}" class="candidate-photo">
+                        </div>
+                        <div class="candidate-info">
+                            <h5 class="candidate-name">{{ candidat.nom_complet }}</h5>
+                            <p class="candidate-slogan">{{ candidat.slogan }}</p>
+                            <button class="vote-button" data-candidate-id="{{ candidat.id }}">
+                                Voter pour ce candidat
+                            </button>
+                            <button class="program-button" data-program="{{ candidat.programme }}">
+                                Voir le programme
+                            </button>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="no-candidates">Aucun candidat pour ce club</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Confirmez votre vote</h3>
+            <p id="confirmationText">Vous êtes sur le point de voter pour <span id="candidateName"></span> comme président du club <span id="clubName"></span>.</p>
+            <div class="modal-actions">
+                <button id="confirmVote" class="confirm-button">Confirmer</button>
+                <button id="cancelVote" class="cancel-button">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal programme -->
+    <div id="programModal" class="modal">
+        <div class="modal-content program-content">
+            <span class="close-modal">&times;</span>
+            <h3 id="programTitle">Programme électoral</h3>
+            <div id="programText" class="program-text"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/vote_club.js' %}"></script>
+{% endblock %}

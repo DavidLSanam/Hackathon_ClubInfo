@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Plateforme de Vote ENSAE{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+    <!-- ======= ENTÊTE (NAVBAR) ======= -->
+    <header>
+        <nav class="navbar">
+            <div class="logo-container">
+                <a href="{% url 'accueil' %}">
+                    <img src="{% static 'images/logo_ensae.png' %}" alt="ENSAE Logo" class="logo-img">
+                    <span class="logo-text">ENSAE VOTE</span>
+                </a>
+            </div>
+
+            <div class="burger" id="burger">
+                <div class="bar1"></div>
+                <div class="bar2"></div>
+                <div class="bar3"></div>
+            </div>
+
+            <ul class="nav-links" id="nav-links">
+                <li><a href="{% url 'accueil' %}">Accueil</a></li>
+                <li><a href="{% url 'vote' %}">Vote</a></li>
+                <li><a href="{% url 'results_portal' %}">Résultats</a></li>
+                <li><a href="{% url 'portail_candidatures' %}">Postuler</a></li>
+                
+                {% if request.session.voter_id %}
+                    {% with voter=request.voter %}
+                        {% if voter.is_admin %}
+                            <li>
+                                <a href="{% url 'admin_dashboard' %}" class="admin-link">
+                                    <i class="fas fa-cog"></i> Administration
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if request.path != '/' and request.path != '/login/' %}
+                            <li><a href="{% url 'logout' %}">Se déconnecter</a></li>
+                        {% endif %}
+                    {% endwith %}
+                {% else %}
+                    <li><a href="{% url 'login' %}">Se connecter</a></li>
+                {% endif %}
+                
+                <li>
+                    <button id="dark-mode-toggle">🌓</button>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- ======= CONTENU PRINCIPAL ======= -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ======= PIED DE PAGE ======= -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Nous contacter</h3>
+                <p>Email : ensae.vote@domaine.sn</p>
+                <p>Téléphone : +221 77 000 00 00</p>
+            </div>
+            <div class="footer-section">
+                <h3>Nous suivre</h3>
+                <div class="socials">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>À propos</h3>
+                <p>Plateforme conçue pour faciliter les élections à l'ENSAE Dakar.</p>
+                <p>Design by <strong>David SANAM</strong> & <strong>Lamerveille NGUIMKENG</strong></p>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; {{ year|default:"2025" }} ENSAE VOTE. Tous droits réservés.
+        </div>
+    </footer>
+
+    <script>
+        // Burger toggle
+        const burger = document.getElementById("burger");
+        const navLinks = document.getElementById("nav-links");
+
+        burger.addEventListener("click", () => {
+            burger.classList.toggle("open");
+            navLinks.classList.toggle("active");
+        });
+
+        // Mode sombre
+        const toggle = document.getElementById("dark-mode-toggle");
+        const html = document.documentElement;
+
+        toggle.addEventListener("click", () => {
+            const isDark = html.getAttribute("data-theme") === "dark";
+            html.setAttribute("data-theme", isDark ? "light" : "dark");
+        });
+    </script>
+
+    <script id="candidates-data" type="application/json">{{ candidates_json|safe }}</script>
+    <script id="participation-data" type="application/json">{{ participation_json|safe }}</script>
+    <script id="timeline-data" type="application/json">{{ timeline_json|safe }}</script>
+
+    {% block extra_js %}
+    <script src="{% static 'js/base.js' %}"></script>
+    {% endblock %}
+</body>
+</html>

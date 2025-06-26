@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Votre matricule{% endblock %}
+
+{% block content %}
+<div class="login-container">
+  <div class="matricule-result">
+    <h2>Votre matricule</h2>
+    {% if deja_attribue %}
+      <p class="info">Vous avez déjà obtenu ce matricule précédemment :</p>
+    {% else %}
+      <p class="info">Voici votre matricule unique :</p>
+    {% endif %}
+    
+    <div class="matricule-display" id="matricule-to-copy">
+      {{ matricule }}
+      <button onclick="copyMatricule()" class="copy-btn">
+        <i class="far fa-copy"></i>
+      </button>
+    </div>
+    
+    <p class="instructions">
+      Conservez ce matricule précieusement. Il vous servira pour vous connecter.
+    </p>
+    
+    <a href="{% url 'login' %}" class="login-link">
+      <button>Se connecter avec ce matricule</button>
+    </a>
+  </div>
+</div>
+
+<script>
+function copyMatricule() {
+  const matricule = document.getElementById('matricule-to-copy').textContent.trim();
+  navigator.clipboard.writeText(matricule);
+  
+  // Afficher un tooltip ou message temporaire
+  const btn = document.querySelector('.copy-btn');
+  btn.innerHTML = '<i class="fas fa-check"></i>';
+  setTimeout(() => {
+    btn.innerHTML = '<i class="far fa-copy"></i>';
+  }, 2000);
+}
+</script>
+{% endblock %}

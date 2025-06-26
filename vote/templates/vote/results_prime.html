@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Résultats des Élections | ENSAE{% endblock %}
+
+{% block extra_css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+    .results-portal {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f5f9ff, #e0ecff);
+        min-height: 100vh;
+        padding: 3rem 1rem;
+    }
+
+    .portal-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .portal-header {
+        margin-bottom: 3rem;
+    }
+
+    .portal-title {
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: #003d99;
+        margin-bottom: 1rem;
+    }
+
+    .portal-subtitle {
+        font-size: 1.2rem;
+        color: #555;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .result-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .result-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 61, 153, 0.2);
+    }
+
+    .result-icon {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 1.5rem;
+        object-fit: contain;
+    }
+
+    .result-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #004aad;
+        margin-bottom: 0.5rem;
+    }
+
+    .result-description {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-view {
+        display: inline-block;
+        padding: 0.6rem 1.5rem;
+        background: linear-gradient(135deg, #4361ee, #3a0ca3);
+        color: white;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .result-card:hover .btn-view {
+        background: linear-gradient(135deg, #3a0ca3, #4361ee);
+        transform: translateY(-3px);
+    }
+
+    @media (max-width: 768px) {
+        .portal-title {
+            font-size: 2.2rem;
+        }
+        
+        .results-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .result-card {
+            padding: 1.5rem;
+        }
+        
+        .result-icon {
+            width: 60px;
+            height: 60px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="results-portal">
+    <div class="portal-container">
+        <div class="portal-header">
+            <h1 class="portal-title">Résultats des Élections</h1>
+            <p class="portal-subtitle">Consultez les résultats des différentes élections organisées à l'ENSAE</p>
+        </div>
+        
+        <div class="results-grid">
+            <!-- Carte AES -->
+            <a href="{% url 'resultats' %}" class="result-card">
+                <img src="{% static 'images/logo_ensae.png' %}" alt="Résultats AES" class="result-icon">
+                <h3 class="result-title">Résultats AES</h3>
+                <p class="result-description">Consultez les résultats des élections du Bureau des Élèves</p>
+                <span class="btn-view">Voir les résultats</span>
+            </a>
+            
+            <!-- Carte Clubs -->
+            <a href="{% url 'results_club' %}" class="result-card">
+                <img src="{% static 'images/logo_ensae.png' %}" alt="Résultats Clubs" class="result-icon">
+                <h3 class="result-title">Résultats des Clubs</h3>
+                <p class="result-description">Découvrez les résultats des élections des présidents de clubs</p>
+                <span class="btn-view">Voir les résultats</span>
+            </a>
+            
+            <!-- Carte Responsables de Classe -->
+            <a href="{% url 'results_votes_classe' %}" class="result-card">
+                <img src="{% static 'images/logo_ensae.png' %}" alt="Résultats Classe" class="result-icon">
+                <h3 class="result-title">Responsables de Classe</h3>
+                <p class="result-description">Visualisez les résultats des élections des responsables de classe</p>
+                <span class="btn-view">Voir les résultats</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Candidature Responsable de Classe | ENSAE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/candidature_responsable.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="candidature-container">
+    <div class="header-section">
+        <h1><i class="fas fa-user-tie"></i> Candidature Responsable de Classe</h1>
+        <p class="subtitle">Postulez pour devenir responsable de votre classe: {{ classe_actuelle }}</p>
+    </div>
+
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if not deja_candidat %}
+    <div class="form-card">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.poste.id_for_label }}">Poste à pourvoir</label>
+                {{ form.poste }}
+            </div>
+            
+            <div class="name-fields">
+                <div class="form-group">
+                    <label for="{{ form.prenom.id_for_label }}">Prénom</label>
+                    {{ form.prenom }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.nom.id_for_label }}">Nom</label>
+                    {{ form.nom }}
+                    <small class="form-text">Votre nom sera affiché en majuscules</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.photo.id_for_label }}">Photo de profil</label>
+                {{ form.photo }}
+                <small class="form-text">Format recommandé : carré 500x500px</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.programme.id_for_label }}">Programme et motivations</label>
+                {{ form.programme }}
+                <small class="form-text">Décrivez vos projets pour la classe (300 mots max)</small>
+            </div>
+            
+            <div class="submit-section">
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i> Soumettre ma candidature
+                </button>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="already-candidate">
+        <i class="fas fa-check-circle"></i>
+        <p>Vous avez déjà soumis une candidature pour un poste de responsable.</p>
+        <a href="{% url 'accueil' %}" class="btn-back">Retour à l'accueil</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Merci pour votre vote{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/merci.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="thank-you-container">
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    
+    <div class="thank-you-card">
+        <div class="checkmark-circle">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle-bg" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+        </div>
+        
+        <h1 class="thank-you-title">Merci pour votre vote !</h1>
+        <p class="thank-you-message">
+            Votre participation compte énormément pour nous.<br>
+            Les résultats seront disponibles bientôt.
+        </p>
+        
+        <div class="thank-you-footer">
+            <p class="redirect-message">
+                Vous allez être redirigé vers l'accueil dans <span id="countdown">5</span> secondes...
+            </p>
+            <a href="{% url 'accueil' %}" class="home-link">
+                Retour à l'accueil maintenant
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Compte à rebours
+    let seconds = 5;
+    const countdown = setInterval(() => {
+        document.getElementById('countdown').textContent = --seconds;
+        if (seconds <= 0) {
+            clearInterval(countdown);
+            window.location.href = "{% url 'accueil' %}";
+        }
+    }, 1000);
+</script>
+{% endblock %}

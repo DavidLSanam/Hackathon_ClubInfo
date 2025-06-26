@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Vote Responsables de Classe{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/responsables_classe.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="vote-container">
+    <div class="header-animation">
+        <h1 class="title-glitch">Élection des Responsables</h1>
+        <h2 class="subtitle">Votre classe : <span class="highlight">{{ classe_eleve }}</span></h2>
+    </div>
+
+    <div class="vote-process">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        {% for poste, candidats in candidats_par_poste.items %}
+        <div class="poste-section animate-slideup">
+            <div class="poste-header">
+                <div class="poste-badge">{{ forloop.counter }}</div>
+                <h3>{{ poste.nom }}</h3>
+                <div class="progress-tracker">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="candidates-grid">
+                {% if not candidats %}
+                <div class="empty-state">
+                    <img src="{% static 'images/no-candidates.svg' %}" alt="Aucun candidat">
+                    <p>Aucun candidat déclaré pour ce poste</p>
+                </div>
+                {% else %}
+                {% for candidat in candidats %}
+                <div class="candidate-card" data-candidate-id="{{ candidat.id }}">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            {% if candidat.photo %}
+                            <img src="{{ candidat.photo.url }}" alt="{{ candidat.nom }}" class="candidate-photo">
+                            {% else %}
+                            <div class="avatar-placeholder">{{ candidat.nom|first|upper }}</div>
+                            {% endif %}
+                            <div class="candidate-info">
+                                <h4>{{ candidat.nom }}</h4>
+                                <p class="classe">{{ candidat.classe }}</p>
+                            </div>
+                            <div class="select-overlay">
+                                <span>Sélectionner</span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="back-content">
+                                <button class="vote-btn" data-poste-id="{{ poste.id }}" data-candidate-id="{{ candidat.id }}">
+                                    Voter pour<br>{{ candidat.nom|truncatechars:15 }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="floating-actions">
+        <button id="submit-votes" class="btn-glow disabled">
+            <span class="btn-text">Valider mes votes</span>
+            <span class="btn-loader">
+                <div class="loader-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </span>
+        </button>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirmation-modal" class="modal">
+    <div class="modal-content scale-in">
+        <div class="modal-header">
+            <h3>Confirmation des votes</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="votes-summary"></div>
+        </div>
+        <div class="modal-footer">
+            <button id="confirm-votes" class="btn-confirm">Confirmer</button>
+            <button id="modify-votes" class="btn-modify">Modifier</button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Animation -->
+<div id="success-animation" class="success-animation">
+    <div class="checkmark">✓</div>
+    <h3>Votes enregistrés avec succès !</h3>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const VOTE_URL = "{% url 'vote_responsables_classe' %}";
+    const MERCI_URL = "{% url 'merci' %}";
+</script>
+<script src="{% static 'js/responsables_classe.js' %}"></script>
+{% endblock %}

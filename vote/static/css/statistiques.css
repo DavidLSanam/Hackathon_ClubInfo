@@ -1,0 +1,189 @@
+/* Conteneur principal */
+.container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem 2.5rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #1a1a1a;
+}
+
+/* Titre principal */
+.container > h1 {
+    text-align: center;
+    color: #004080;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 3px solid #d0d0d0;
+    padding-bottom: 0.7rem;
+}
+
+/* Conteneurs des sélecteurs (select + label + radios) */
+.selector {
+    margin: 1.5rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* Labels dans selector */
+.selector label {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #003366;
+    cursor: pointer;
+}
+
+/* Selects */
+.selector select {
+    padding: 0.6rem 0.8rem;
+    font-size: 1.1rem;
+    border: 1.5px solid #aaa;
+    border-radius: 6px;
+    min-width: 220px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.selector select:focus {
+    outline: none;
+    border-color: #0059b3;
+    box-shadow: 0 0 8px rgba(0, 89, 179, 0.5);
+}
+
+/* Bouton Afficher */
+#afficherBtn {
+    display: block;
+    margin: 2rem auto 0 auto;
+    padding: 0.75rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    background-color: #00796b;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 121, 107, 0.4);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#afficherBtn:hover {
+    background-color: #004d40;
+    box-shadow: 0 6px 12px rgba(0, 77, 64, 0.6);
+}
+
+/* Canvas du graphique */
+.chart {
+    max-width: 100%;
+    margin: 2rem 0 3rem 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Titre secondaire */
+h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #004080;
+    border-bottom: 3px solid #d0d0d0;
+    padding-bottom: 0.5rem;
+    font-weight: 700;
+    font-size: 1.6rem;
+}
+
+/* Table des résultats */
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 1rem;
+}
+
+/* En-têtes */
+.results-table thead tr {
+    background-color: #00796b;
+    color: #fff;
+    text-align: left;
+}
+
+.results-table thead th {
+    padding: 12px 15px;
+}
+
+/* Lignes du corps */
+.results-table tbody tr {
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s ease;
+}
+
+.results-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.results-table tbody tr:hover {
+    background-color: #e0f2f1;
+}
+
+.results-table tbody td {
+    padding: 12px 15px;
+    color: #333;
+}
+
+/* Responsive : empilement vertical sur petits écrans */
+@media (max-width: 600px) {
+    .selector {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .selector label, .selector select {
+        width: 100%;
+        margin-bottom: 0.8rem;
+    }
+
+    #afficherBtn {
+        width: 100%;
+    }
+
+    .results-table thead {
+        display: none; /* on peut masquer l’entête et afficher en mode carte si tu veux */
+    }
+
+    .results-table, .results-table tbody, .results-table tr, .results-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .results-table tr {
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 1rem;
+    }
+
+    .results-table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+
+    .results-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        padding-left: 10px;
+        font-weight: 700;
+        text-align: left;
+        color: #004d40;
+    }
+}
+

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/generer_codes.css' %}">
+
+<div class="vote-page">
+  <div class="container">
+    <h2>🛠️ Générer les codes de vote</h2>
+    
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">🎯 Générer les codes</button>
+    </form>
+
+    <h3 class="mt-6">📋 Classes déjà traitées</h3>
+    <ul class="treated-classes">
+      {% for classe in classes_existantes %}
+        <li class="classe-entry">
+          <strong>{{ classe.classe }}</strong> : {{ classe.nombre_eleves }} élèves – 
+          Générés : 
+          {% if classe.codes_genere %}
+            <span class="status generated">✅</span>
+          {% else %}
+            <span class="status not-generated">❌</span>
+          {% endif %}
+
+          <!-- Réinitialisation forte (supprime les matricules) -->
+          <form method="post" action="{% url 'reset_codes' classe.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm"
+                    onclick="return confirm('Confirmer la suppression des matricules ?')">
+              🗑️ Réinitialisation complète
+            </button>
+          </form>
+
+          <!-- Réinitialisation douce (remet juste codes_genere à False) -->
+          <form method="post" action="{% url 'reset_affichage_codes' classe.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning btn-sm"
+                    onclick="return confirm('Réinitialiser l’affichage pour cette classe ?')">
+              ♻️ Réinitialiser affichage
+            </button>
+          </form>
+        </li>
+      {% empty %}
+        <li>Aucune classe encore enregistrée.</li>
+      {% endfor %}
+    </ul>
+
+    <div class="download-section mt-6">
+      <a href="{% url 'export_voters_excel' %}" class="download-button">
+        ⬇️ Télécharger les codes générés (Excel)
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+.vote-page .container {
+  background: #f9f9fb;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+.vote-page h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+.vote-page ul.treated-classes {
+  list-style: none;
+  padding-left: 0;
+}
+.vote-page li.classe-entry {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  border: 1px solid #ddd;
+}
+.status.generated {
+  color: green;
+  font-weight: bold;
+}
+.status.not-generated {
+  color: red;
+  font-weight: bold;
+}
+.btn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+}
+.btn-danger {
+  background-color: #dc2626;
+  color: white;
+}
+.btn-warning {
+  background-color: #f59e0b;
+  color: white;
+}
+.btn-sm {
+  font-size: 0.8rem;
+}
+.download-section {
+  margin-top: 2rem;
+  text-align: center;
+}
+.download-button {
+  background-color: #10b981;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  text-decoration: none;
+  border-radius: 0.4rem;
+  font-weight: bold;
+}
+.download-button:hover {
+  background-color: #059669;
+}
+</style>
+
+{% endblock %}

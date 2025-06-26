@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Administration{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<script>
+console.log("Données reçues :", {
+    clubs: {{ clubs|safe }},
+    postes_responsables: {{ postes_responsables|safe }},
+    postes: {{ postes|safe }},
+    classes: {{ classes|safe }},
+    current_vote_type: "{{ current_vote_type }}"
+});
+</script>
+
+<div class="admin-container">
+    <h1>🎛️ Tableau de bord administratif</h1>
+
+    <!-- Sélecteur de type de vote -->
+    <div class="vote-type-selector">
+        <h3>Afficher les statistiques pour :</h3>
+        <div class="vote-type-buttons">
+            <a href="?vote_type=aes" class="vote-type-btn {% if current_vote_type == 'aes' %}active{% endif %}" data-vote-type="aes">
+                Vote AES
+            </a>
+            <a href="?vote_type=club" class="vote-type-btn {% if current_vote_type == 'club' %}active{% endif %}" data-vote-type="club">
+                Présidents de Clubs
+            </a>
+            <a href="?vote_type=classe" class="vote-type-btn {% if current_vote_type == 'classe' %}active{% endif %}" data-vote-type="classe">
+                Responsables de Classe
+            </a>
+        </div>
+    </div>
+
+    <!-- Section Statistiques -->
+    <div class="stats-card">
+        <h2>📊 Statistiques globales - 
+            {% if current_vote_type == 'aes' %}Bureau AES
+            {% elif current_vote_type == 'club' %}Présidents de Clubs
+            {% else %}Responsables de Classe{% endif %}
+        </h2>
+        
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.total_votants }}</span>
+                <span class="stat-label">Électeurs inscrits</span>
+            </div>
+            
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.votes_exprimes }}</span>
+                <span class="stat-label">Votes exprimés</span>
+            </div>
+        </div>
+        
+        <h3>Taux de participation par classe</h3>
+        <div class="participation-chart">
+            {% for participation in stats.participations %}
+            <div class="participation-item">
+                <span class="classe">{{ participation.classe }}</span>
+                <span class="counts">
+                    ({{ participation.votants }}/{{ participation.inscrits }})
+                </span>
+                <div class="progress-bar">
+                    <div class="progress" 
+                        style="width: {{ participation.taux }}%;"
+                        data-taux="{{ participation.taux }}"
+                        data-votants="{{ participation.votants }}"
+                        data-inscrits="{{ participation.inscrits }}"></div>
+                </div>
+                <span class="percentage">{{ participation.taux }}%</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="admin-sections">
+        <!-- Sections restantes inchangées -->
+        <!-- Section 1 : Gestion des électeurs -->
+        <div class="admin-card">
+            <h2>👤 Gestion des électeurs</h2>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="ajout-electeur">Ajouter</button>
+                <button class="tab-btn" data-tab="suppression-electeur">Supprimer</button>
+            </div>
+            
+            <div id="ajout-electeur" class="tab-content active">
+                <form id="add-voter-form">
+                    <input type="text" name="matricule" placeholder="Matricule" required>
+                    <select name="classe" required>
+                        {% for classe, _ in classes %}
+                            <option value="{{ classe }}">{{ classe }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Ajouter électeur</button>
+                </form>
+            </div>
+            
+            <div id="suppression-electeur" class="tab-content">
+                <form id="delete-voter-form">
+                    <input type="text" name="matricule" placeholder="Matricule à supprimer" required>
+                    <button type="submit" class="danger">Supprimer électeur</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Section 2 : Gestion des candidats (inchangée) -->
+        <div class="admin-card">
+            <h2>🎯 Gestion des candidats</h2>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="aes-candidat">Bureau AES</button>
+                <button class="tab-btn" data-tab="club-candidat">Président Club</button>
+                <button class="tab-btn" data-tab="classe-candidat">Responsable Classe</button>
+            </div>
+            
+            <!-- Candidats Bureau AES -->
+            <div id="aes-candidat" class="tab-content active">
+                <form id="add-aes-candidat-form" enctype="multipart/form-data">
+                    <input type="text" name="nom" placeholder="Nom du candidat" required>
+                    <select name="poste" required>
+                        {% for poste in postes %}
+                            <option value="{{ poste.id }}">{{ poste.nom }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="classe">
+                        {% for classe, _ in classes %}
+                            <option value="{{ classe }}">{{ classe }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="file" name="photo" required>
+                    <button type="submit">Ajouter candidat</button>
+                </form>
+                
+                <form id="delete-aes-candidat-form">
+                    <input type="text" name="nom" placeholder="Nom du candidat" required>
+                    <input type="text" name="matricule" placeholder="Matricule du candidat">
+                    <button type="submit" class="danger">Supprimer candidat</button>
+                </form>
+            </div>
+            
+            <!-- Candidats Président Club -->
+            <div id="club-candidat" class="tab-content">
+                <form id="add-club-candidat-form" enctype="multipart/form-data">
+                    <input type="text" name="nom" placeholder="Nom du candidat" required>
+                    <select name="club" required>
+                        {% for club in clubs %}
+                            <option value="{{ club.id }}">{{ club.nom }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="classe">
+                        {% for classe, _ in classes %}
+                            <option value="{{ classe }}">{{ classe }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="slogan" placeholder="Slogan">
+                    <textarea name="programme" placeholder="Programme"></textarea>
+                    <input type="file" name="photo" required>
+                    <button type="submit">Ajouter candidat</button>
+                </form>
+                
+                <form id="delete-club-candidat-form">
+                    <input type="text" name="nom" placeholder="Nom du candidat" required>
+                    <input type="text" name="matricule" placeholder="Matricule du candidat">
+                    <button type="submit" class="danger">Supprimer candidat</button>
+                </form>
+            </div>
+            
+            <!-- Candidats Responsable Classe -->
+            <div id="classe-candidat" class="tab-content">
+                <form id="add-classe-candidat-form" enctype="multipart/form-data">
+                    <input type="text" name="nom" placeholder="Nom du candidat" required>
+                    <select name="poste" required>
+                        {% for poste in postes_responsables %}
+                            <option value="{{ poste.id }}">{{ poste.nom }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="classe" required>
+                        {% for classe, _ in classes %}
+                            <option value="{{ classe }}">{{ classe }}</option>
+                        {% endfor %}
+                    </select>
+                    <textarea name="programme" placeholder="Programme"></textarea>
+                    <input type="file" name="photo">
+                    <button type="submit">Ajouter candidat</button>
+                </form>
+                
+                <form id="delete-classe-candidat-form">
+                    <input type="text" name="nom" placeholder="Nom du candidat" required>
+                    <input type="text" name="matricule" placeholder="Matricule du candidat">
+                    <button type="submit" class="danger">Supprimer candidat</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Section 3 : Contrôle des périodes -->
+        <div class="admin-card">
+            <h2>🕓 Périodes électorales</h2>
+            <button onclick="toggleCandidatures(true)">📢 Ouvrir les candidatures</button>
+            <button onclick="toggleCandidatures(false)" class="danger">✖️ Fermer les candidatures</button>
+            <hr>
+            <button onclick="toggleVotes(true)">✅ Ouvrir les votes</button>
+            <button onclick="toggleVotes(false)" class="danger">🚫 Fermer les votes</button>
+        </div>
+
+        <!-- Section 4 : Gestion des admins -->
+        <div class="admin-card">
+            <h2>🔐 Comité électoral</h2>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="generer-admin">Générer codes</button>
+                <button class="tab-btn" data-tab="liste-admin">Liste des admins</button>
+                <button class="tab-btn" data-tab="supprimer-admin">Supprimer admin</button>
+            </div>
+            
+            <div id="generer-admin" class="tab-content active">
+                <form id="generate-admin-matricules-form">
+                    <input type="number" name="quantite" placeholder="Nombre de codes" min="1" required>
+                    <button type="submit">Générer codes admin</button>
+                </form>
+                <div id="generated-admin-codes" class="codes-display"></div>
+                <a href="{% url 'generer_codes' %}" class="admin-button">🧾 Générer codes élèves</a>
+            </div>
+            
+            <div id="liste-admin" class="tab-content">
+                <h3>Administrateurs actifs</h3>
+                <div class="admin-list-container">
+                    <div id="admin-list-loading">Chargement des administrateurs...</div>
+                    <ul id="admin-list" class="admin-list"></ul>
+                </div>
+            </div>
+            
+            <div id="supprimer-admin" class="tab-content">
+                <form id="delete-admin-form">
+                    <input type="text" name="matricule" placeholder="Matricule admin à supprimer" required>
+                    <button type="submit" class="danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Section 5 : Navigation -->
+        <div class="admin-card nav-card">
+            <h2>🧭 Navigation rapide</h2>
+            <a href="{% url 'vote' %}">Page de vote</a>
+            <a href="{% url 'results_portal' %}">Résultats</a>
+            <a href="{% url 'statistiques' %}">Statistiques</a>
+            <a href="{% url 'importer_emails_autorises' %}">Importer des emails</a>
+            <a href="{% url 'generate_pdf_report' %}" class="btn btn-primary">
+                <i class="fas fa-file-pdf"></i> Exporter en PDF Résultats_AES
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

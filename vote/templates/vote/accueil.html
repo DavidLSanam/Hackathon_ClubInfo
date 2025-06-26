@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bienvenue sur la Plateforme de Vote{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/accueil.css' %}" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<header class="hero">
+  <div class="overlay d-flex flex-column justify-content-center align-items-center text-center px-3">
+    <h1 class="hero-title mb-3">🗳️ Bienvenue sur la plateforme de vote en ligne</h1>
+    <p class="hero-subtitle mb-4">Un système moderne, sécurisé et transparent pour tous vos besoins électoraux.</p>
+    <a href="{% url 'obtenir_matricule' %}" class="btn btn-primary btn-lg rounded-pill px-5 shadow">Commencer à voter</a>
+  </div>
+</header>
+
+<main class="container py-5">
+  {% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-success text-center">{{ message }}</div>
+  {% endfor %}
+  {% endif %}
+  <!-- Fonctionnalités -->
+  <section id="features" class="mb-5">
+    <h2 class="section-title text-center mb-4">Fonctionnalités clés</h2>
+    <div class="row g-4 justify-content-center">
+      <div class="col-12 col-md-4 feature-card">
+        <div class="icon bg-primary text-white mb-3"><i class="bi bi-shield-lock-fill"></i></div>
+        <h4>Sécurité maximale</h4>
+        <p>Vos votes sont protégés par des technologies de chiffrement avancées.</p>
+      </div>
+      <div class="col-12 col-md-4 feature-card">
+        <div class="icon bg-success text-white mb-3"><i class="bi bi-graph-up-arrow"></i></div>
+        <h4>Résultats en temps réel</h4>
+        <p>Suivez l’évolution des résultats instantanément et en toute transparence.</p>
+      </div>
+      <div class="col-12 col-md-4 feature-card">
+        <div class="icon bg-info text-white mb-3"><i class="bi bi-people-fill"></i></div>
+        <h4>Accessibilité</h4>
+        <p>Plateforme accessible sur mobile, tablette et ordinateur, partout et tout le temps.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comment ça marche -->
+  <section id="how-it-works" class="mb-5">
+    <h2 class="section-title text-center mb-4">Comment ça marche</h2>
+    <div class="row g-4">
+      <div class="col-md-4 step-card text-center p-4">
+        <div class="step-number mb-3">1</div>
+        <h5>Connexion sécurisée</h5>
+        <p>Connectez-vous en toute simplicité et sécurité.</p>
+      </div>
+      <div class="col-md-4 step-card text-center p-4">
+        <div class="step-number mb-3">2</div>
+        <h5>Choisissez votre candidat</h5>
+        <p>Explorez la liste des candidats et faites votre choix en toute confiance.</p>
+      </div>
+      <div class="col-md-4 step-card text-center p-4">
+        <div class="step-number mb-3">3</div>
+        <h5>Votez en un clic</h5>
+        <p>Validez votre vote rapidement et suivez les résultats en temps réel.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sécurité & Transparence -->
+  <section id="security" class="mb-5 text-center">
+    <h2 class="section-title mb-4">Sécurité & Transparence</h2>
+    <p class="lead mx-auto" style="max-width:700px;">
+      Notre plateforme utilise des protocoles cryptographiques de pointe, garantissant que chaque vote est anonyme, authentique et immuable.
+      Une traçabilité totale assure la confiance des électeurs à chaque étape du processus.
+    </p>
+    <i class="bi bi-shield-lock-fill display-1 text-primary"></i>
+  </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Statistiques des votes{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/statistiques.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Statistiques des votes</h1>
+
+  <div class="selector">
+    <label for="posteSelect">Choisir un poste :</label>
+    <select id="posteSelect">
+      <option value="">-- Sélectionner un poste --</option>
+      {% for poste in postes %}
+        <option value="{{ poste.nom }}">{{ poste.nom }}</option>
+      {% endfor %}
+    </select>
+
+    <label><input type="radio" name="viewType" value="classe" checked> Par classe</label>
+    <label><input type="radio" name="viewType" value="filiere"> Par filière</label>
+  </div>
+
+  <div class="selector" id="selectWrapperClasse">
+    <label for="classSelect">Choisir une classe :</label>
+    <select id="classSelect">
+      {% for classe in classes %}
+        <option value="{{ classe }}">{{ classe }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="selector" id="selectWrapperFiliere" style="display:none;">
+    <label for="filiereSelect">Choisir une filière :</label>
+    <select id="filiereSelect">
+      {% for filiere in filieres %}
+        <option value="{{ filiere }}">{{ filiere }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <button id="afficherBtn">Afficher</button>
+
+  <canvas id="voteChart" class="chart" style="max-width:900px; margin-top:30px;"></canvas>
+
+  <h2>Filières les plus représentées dans le bureau</h2>
+  <table class="results-table" id="bureauTable">
+    <thead>
+      <tr>
+        <th>Poste</th>
+        <th>Candidat</th>
+        <th>Filière</th>
+        <th>Nombre de votes</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const statsParClasse = {{ stats_par_classe|safe }};
+  const statsParFiliere = {{ stats_par_filiere|safe }};
+  const votesParFiliere = {{ votes_par_filiere|safe }};
+</script>
+<script src="{% static 'js/statistiques.js' %}"></script>
+{% endblock %}

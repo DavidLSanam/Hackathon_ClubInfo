@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/telechargement.css' %}">
+
+<div class="container">
+  <h1>Téléchargement des matricules</h1>
+  <p>Vous pouvez exporter la liste complète des électeurs avec leur classe au format Excel (.xlsx).</p>
+  <a href="{% url 'export_voters_excel' %}" class="btn">
+    Télécharger les matricules (.xlsx)
+  </a>
+</div>
+{% endblock %}

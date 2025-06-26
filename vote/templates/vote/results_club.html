@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Résultats des Élections - Présidents de Clubs | ENSAE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/results_club.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="results-container">
+    <div class="results-header">
+        <h1><i class="fas fa-trophy"></i> Résultats des Élections</h1>
+        <p class="subtitle">Présidents de Clubs - Session {{ current_year }}</p>
+    </div>
+
+    <div class="controls-section">
+        <div class="filters-card">
+            <h2><i class="fas fa-filter"></i> Filtres</h2>
+            <div class="filter-group">
+                <label for="club-select"><i class="fas fa-chess-queen"></i> Club:</label>
+                <select id="club-select" class="filter-select">
+                    <option value="all">Tous les clubs</option>
+                    {% for club in clubs %}
+                    <option value="{{ club.id }}">{{ club.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="filiere-select"><i class="fas fa-graduation-cap"></i> Filière:</label>
+                <select id="filiere-select" class="filter-select">
+                    <option value="all">Toutes filières</option>
+                    <option value="ISE">ISE</option>
+                    <option value="AS">AS</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="class-select"><i class="fas fa-users"></i> Classe:</label>
+                <select id="class-select" class="filter-select">
+                    <option value="all">Toutes classes</option>
+                    {% for class in CLASS_CHOICES %}
+                    <option value="{{ class.0 }}">{{ class.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <button id="apply-filters" class="filter-button">
+                <i class="fas fa-chart-bar"></i> Appliquer les filtres
+            </button>
+        </div>
+    </div>
+
+    <div class="results-content">
+        <div class="results-card full-width">
+            <h2><i class="fas fa-chart-pie"></i> Répartition des votes par candidat</h2>
+            <div class="chart-container">
+                <canvas id="votesChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="results-card full-width">
+            <h2><i class="fas fa-chart-bar"></i> Total des votes par club</h2>
+            <div class="chart-container">
+                <canvas id="clubsChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="results-grid">
+            <div class="results-card">
+                <h2><i class="fas fa-medal"></i> Classement des candidats</h2>
+                <div id="candidates-ranking" class="ranking-container"></div>
+            </div>
+            
+            <div class="results-card">
+                <h2><i class="fas fa-user-graduate"></i> Participation par Filière</h2>
+                <div class="chart-container">
+                    <canvas id="filiereChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="results-card">
+                <h2><i class="fas fa-calendar-alt"></i> Évolution Temporelle</h2>
+                <div class="chart-container">
+                    <canvas id="timelineChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="results-card">
+                <h2><i class="fas fa-percentage"></i> Taux de Participation</h2>
+                <div id="participation-stats" class="stats-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Template pour un élément de classement -->
+{% verbatim %}
+<script id="ranking-template" type="text/x-handlebars-template">
+    {{#each this}}
+    <div class="ranking-item">
+        <div class="rank-badge">{{addOne @index}}</div>  <!-- Modification ici -->
+        <div class="candidate-info">
+            <img src="{{photo_url}}" alt="{{name}}" class="candidate-photo">
+            <div class="candidate-details">
+                <h4>{{name}}</h4>
+                <p>{{club_nom}}</p>
+            </div>
+        </div>
+        <div class="vote-count">
+            <span>{{votes}}</span>
+            <small>votes</small>
+        </div>
+    </div>
+    {{/each}}
+</script>
+{% endverbatim %}
+
+<!-- Données JSON pour JavaScript -->
+<script id="clubs-data" type="application/json">{{ clubs_json|safe }}</script>
+<script id="participation-data" type="application/json">{{ participation_json|safe }}</script>
+<script id="timeline-data" type="application/json">{{ timeline_json|safe }}</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/handlebars@4.7.7/dist/handlebars.min.js"></script>
+<script src="{% static 'js/results_club.js' %}"></script>
+
+{% verbatim %}
+<script>
+// Configuration de Handlebars pour utiliser [[ ]] au lieu de {{ }}
+Handlebars.registerHelper('$', function() {
+    const original = Handlebars.compile;
+    Handlebars.compile = function(template) {
+        template = template.replace(/\[\[/g, '{{').replace(/\]\]/g, '}}');
+        return original.call(this, template);
+    };
+    return '';
+});
+</script>
+{% endverbatim %}
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Résultats du Vote{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/resultats.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <header>
+    <div class="top-link">
+      <a href="{% url 'statistiques' %}" class="stats-link">← Voir les statistiques détaillées</a>
+    </div>
+    <h1>Résultats du Vote</h1>
+    <p class="subtitle">Choisissez un poste et une vue</p>
+  </header>
+
+
+  <!-- Menu de sélection -->
+  <section class="selector">
+    <label for="posteSelect">Poste :</label>
+    <select id="posteSelect">
+      <option value="" disabled selected>-- Sélectionnez un poste --</option>
+      {% for poste in chart_data %}
+        <option value="poste-{{ forloop.counter }}">{{ poste.poste }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="viewSelect">Vue :</label>
+    <select id="viewSelect">
+      <option value="graphique">Graphique</option>
+      <option value="classement">Classement</option>
+    </select>
+
+    <button id="afficherBtn">Afficher</button>
+  </section>
+
+  <!-- Graphiques -->
+  <section id="charts-container" class="chart-section">
+    {% for poste in chart_data %}
+      <div id="chart-box-poste-{{ forloop.counter }}" class="resultat-card" style="display: none;">
+        <h2>{{ poste.poste }}</h2>
+        <canvas id="chart-{{ forloop.counter }}"></canvas>
+        <script>
+          const ctx{{ forloop.counter }} = document.getElementById("chart-{{ forloop.counter }}");
+          new Chart(ctx{{ forloop.counter }}, {
+            type: "bar",
+            data: {
+              labels: {{ poste.labels|safe }},
+              datasets: [{
+                label: "Votes",
+                data: {{ poste.votes|safe }},
+                backgroundColor: [
+                  "#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f",
+                  "#edc948", "#b07aa1", "#ff9da7", "#9c755f", "#bab0ab"
+                ]
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { display: false },
+                title: {
+                  display: true,
+                  text: "Résultats du poste : {{ poste.poste }}"
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: { precision: 0 }
+                }
+              }
+            }
+          });
+        </script>
+      </div>
+    {% endfor %}
+  </section>
+
+  <!-- Classements -->
+  <section id="tables-container" class="table-section">
+    {% for bloc in classement %}
+      <div id="table-box-poste-{{ forloop.counter }}" style="display: none;">
+        <h3>{{ bloc.poste }}</h3>
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Rang</th>
+              <th>Candidat</th>
+              <th>Votes</th>
+              <th>Pourcentage</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for candidat in bloc.candidats %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ candidat.name }}</td>
+                <td>{{ candidat.votes }}</td>
+                <td>{{ candidat.pourcentage }}%</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endfor %}
+  </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById('afficherBtn').addEventListener('click', () => {
+    const poste = document.getElementById('posteSelect').value;
+    const vue = document.getElementById('viewSelect').value;
+
+    // Masquer tous les graphiques et classements
+    document.querySelectorAll('[id^="chart-box-poste-"]').forEach(div => div.style.display = 'none');
+    document.querySelectorAll('[id^="table-box-poste-"]').forEach(div => div.style.display = 'none');
+
+    if (poste && vue === 'graphique') {
+      document.getElementById('chart-box-' + poste).style.display = 'block';
+    }
+    if (poste && vue === 'classement') {
+      document.getElementById('table-box-' + poste).style.display = 'block';
+    }
+  });
+</script>
+{% endblock %}

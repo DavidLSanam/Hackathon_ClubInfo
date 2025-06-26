@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Récupérer mon matricule{% endblock %}
+
+{% block content %}
+<div class="login-container">
+  <form method="POST">
+    {% csrf_token %}
+    <h2>🔑 Récupérer mon matricule</h2>
+    {% if messages %}
+      <div class="error">
+        {% for message in messages %}
+          {{ message }}
+        {% endfor %}
+      </div>
+    {% endif %}
+    <input type="email" name="email" placeholder="Votre email enregistré" required>
+    <button type="submit">Obtenir mon matricule</button>
+    <p class="footer-text">
+      <a href="{% url 'login' %}">J'ai déjà mon matricule</a>
+    </p>
+  </form>
+</div>
+{% endblock %}

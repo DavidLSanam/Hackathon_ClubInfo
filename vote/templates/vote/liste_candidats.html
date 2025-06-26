@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Liste des Candidats</title>
+</head>
+<body>
+    <h1>Liste des Candidats par Poste</h1>
+    {% regroup candidats by poste as grouped_candidats %}
+    {% for group in grouped_candidats %}
+        <h2>{{ group.grouper.nom }}</h2>
+        <ul>
+            {% for candidat in group.list %}
+                <li>{{ candidat.nom }} {{ candidat.prenom }}</li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+    <a href="{% url 'vote_view' %}">Retour au vote</a>
+</body>
+</html>

@@ -1,0 +1,504 @@
+/* Base Styles */
+:root {
+    --primary: #4361ee;
+    --secondary: #3f37c9;
+    --accent: #4895ef;
+    --dark: #1b263b;
+    --light: #f8f9fa;
+    --success: #4cc9f0;
+    --danger: #f72585;
+    --warning: #f8961e;
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    font-family: 'Poppins', sans-serif;
+    color: var(--dark);
+}
+
+/* Header Animation */
+.header-animation {
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: fadeIn 1s ease;
+}
+
+.title-glitch {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(to right, #4361ee, #3a0ca3, #7209b7);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    position: relative;
+    animation: glitch 2s infinite alternate;
+}
+
+@keyframes glitch {
+    0% { text-shadow: 0.05em 0 0 #f72585, -0.05em -0.025em 0 #4cc9f0; }
+    14% { text-shadow: 0.05em 0 0 #f72585, -0.05em -0.025em 0 #4cc9f0; }
+    15% { text-shadow: -0.05em -0.025em 0 #f72585, 0.025em 0.025em 0 #4cc9f0; }
+    49% { text-shadow: -0.05em -0.025em 0 #f72585, 0.025em 0.025em 0 #4cc9f0; }
+    50% { text-shadow: 0.025em 0.05em 0 #f72585, 0.05em 0 0 #4cc9f0; }
+    99% { text-shadow: 0.025em 0.05em 0 #f72585, 0.05em 0 0 #4cc9f0; }
+    100% { text-shadow: -0.025em 0 0 #f72585, -0.025em -0.025em 0 #4cc9f0; }
+}
+
+.highlight {
+    background: linear-gradient(90deg, #4361ee, #3a0ca3);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 600;
+}
+
+/* Poste Section */
+.poste-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transform: translateY(20px);
+    opacity: 0;
+    animation: slideUp 0.6s forwards;
+    animation-delay: calc(var(--order) * 0.1s);
+}
+
+.poste-header {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    color: white;
+    position: relative;
+}
+
+.poste-badge {
+    background: white;
+    color: var(--primary);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.poste-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.progress-tracker {
+    flex-grow: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    margin-left: 1rem;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: white;
+    width: 0;
+    transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Candidates Grid */
+.candidates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.candidate-card {
+    perspective: 1000px;
+    height: 180px;
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.candidate-card:hover .card-inner {
+    transform: rotateY(20deg);
+}
+
+.candidate-card.active .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card-front {
+    background: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-back {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    transform: rotateY(180deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.candidate-photo {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    object-position: center center; /* Centrage amélioré */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease; /* Animation fluide */
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(135deg, #4895ef, #4361ee);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.candidate-info {
+    padding: 0.75rem;
+    flex-grow: 1;
+}
+
+.candidate-info h4 {
+    margin: 0;
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.classe {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.select-overlay {
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    right: 0;
+    background: var(--primary);
+    color: white;
+    text-align: center;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.candidate-card:hover .select-overlay {
+    bottom: 0;
+    opacity: 1;
+}
+
+.vote-btn {
+    background: white;
+    color: var(--primary);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.vote-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Floating Actions */
+.floating-actions {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 100;
+}
+
+.btn-glow {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 25px rgba(67, 97, 238, 0.3);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn-glow:not(.disabled):hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 30px rgba(67, 97, 238, 0.4);
+}
+
+.btn-glow.disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: #ccc;
+}
+
+.btn-text {
+    position: relative;
+    z-index: 1;
+}
+
+.btn-loader {
+    display: none;
+    margin-left: 0.5rem;
+}
+
+.loader-dots span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    margin: 0 2px;
+    animation: bounce 1.4s infinite ease-in-out;
+}
+
+.loader-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loader-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal.active .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    padding: 1.5rem;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    color: white;
+    position: relative;
+}
+
+.modal-header h3 {
+    margin: 0;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.btn-confirm, .btn-modify {
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-confirm {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+}
+
+.btn-modify {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+/* Success Animation */
+.success-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.success-animation.active {
+    opacity: 1;
+}
+
+.checkmark {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    font-size: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    animation: checkmarkScale 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    transform: scale(0);
+}
+
+@keyframes checkmarkScale {
+    0% { transform: scale(0); }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { 
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to { 
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .candidates-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .floating-actions {
+        bottom: 1rem;
+        right: 1rem;
+    }
+    
+    .btn-glow {
+        padding: 0.75rem 1.5rem;
+    }
+}
+
+/* Pour le retour à la photo */
+.candidate-card.active:hover .card-inner {
+    transform: rotateY(180deg); /* Garde la face arrière visible au survol */
+}
+
+/* Pour le bouton en chargement */
+.btn-glow.loading .btn-loader {
+    display: flex;
+    align-items: center;
+}
+
+/* Pour l'animation de célébration */
+@keyframes celebrate {
+    0% { transform: scale(1); box-shadow: 0 0 0 rgba(67, 97, 238, 0.4); }
+    50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(67, 97, 238, 0.6); }
+    100% { transform: scale(1); box-shadow: 0 0 0 rgba(67, 97, 238, 0.4); }
+}
+
+.btn-glow.celebrate {
+    animation: celebrate 0.5s ease;
+}
