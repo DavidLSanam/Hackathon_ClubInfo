@@ -59,3 +59,6 @@ Outre l'import des emails et la génération de matricules, les administrateurs 
 - Générer des rapports pdf sur les votes
 
 Toutes les autres fonctionnalités sont disponibles dans l'application.
+
+
+Actuellement, toutes les fonctionnalités ne sont pas opérationnelles à 100%, le développement est toujours en cours et sera finalisé sous peu au cas où l'application serait retenue.
