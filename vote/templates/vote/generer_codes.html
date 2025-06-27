@@ -1,130 +1,110 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/generer_codes.css' %}">
+{% endblock %}
 
-<div class="vote-page">
-  <div class="container">
-    <h2>🛠️ Générer les codes de vote</h2>
+{% block content %}
+<div class="generation-container">
+  <h2 class="page-title">🔐 Gestion des matricules de vote</h2>
+  
+  <div class="card main-card">
+    <div class="card-header">
+      <h3>📋 Générer de nouveaux matricules</h3>
+    </div>
     
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-primary">🎯 Générer les codes</button>
-    </form>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="classe">Classe</label>
+          <select name="classe" id="classe" class="form-control" required>
+            <option value="">--- Sélectionnez une classe ---</option>
+            {% for code, nom in selection_form.fields.classe.choices %}
+              <option value="{{ code }}">{{ nom }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <div class="form-group">
+          {{ generer_form.nombre_a_generer }}
+        </div>
+        
+        <button type="submit" name="generer_codes" class="btn btn-primary btn-generer">
+          <i class="fas fa-key"></i> Générer les matricules
+        </button>
+      </form>
+    </div>
+  </div>
 
-    <h3 class="mt-6">📋 Classes déjà traitées</h3>
-    <ul class="treated-classes">
-      {% for classe in classes_existantes %}
-        <li class="classe-entry">
-          <strong>{{ classe.classe }}</strong> : {{ classe.nombre_eleves }} élèves – 
-          Générés : 
-          {% if classe.codes_genere %}
-            <span class="status generated">✅</span>
-          {% else %}
-            <span class="status not-generated">❌</span>
-          {% endif %}
-
-          <!-- Réinitialisation forte (supprime les matricules) -->
-          <form method="post" action="{% url 'reset_codes' classe.id %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger btn-sm"
-                    onclick="return confirm('Confirmer la suppression des matricules ?')">
-              🗑️ Réinitialisation complète
-            </button>
-          </form>
-
-          <!-- Réinitialisation douce (remet juste codes_genere à False) -->
-          <form method="post" action="{% url 'reset_affichage_codes' classe.id %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-warning btn-sm"
-                    onclick="return confirm('Réinitialiser l’affichage pour cette classe ?')">
-              ♻️ Réinitialiser affichage
-            </button>
-          </form>
-        </li>
-      {% empty %}
-        <li>Aucune classe encore enregistrée.</li>
-      {% endfor %}
-    </ul>
-
-    <div class="download-section mt-6">
-      <a href="{% url 'export_voters_excel' %}" class="download-button">
-        ⬇️ Télécharger les codes générés (Excel)
-      </a>
+  <div class="card classes-card mt-4">
+    <div class="card-header">
+      <h3>📋 Liste des classes</h3>
+    </div>
+    
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="classes-table">
+          <thead>
+            <tr>
+              <th>Classe</th>
+              <th>Matricules générés</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for stat in classes_stats %}
+              <tr>
+                <td>{{ stat.nom }}</td>
+                <td>{{ stat.count }}</td>
+                <td class="actions">
+                  <form method="post" action="{% url 'reset_codes' stat.code %}" class="d-inline" onsubmit="return confirm('Confirmez-vous la suppression de TOUS les matricules pour {{ stat.nom }} ?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="confirmation" value="true">
+                    <button type="submit" class="btn btn-sm btn-danger" title="Supprimer tous les matricules">
+                      <i class="fas fa-trash-alt"></i> Supprimer
+                    </button>
+                  </form>
+                  
+                  <a href="{% url 'export_voters_excel' %}?classe={{ stat.code }}" 
+                    class="btn btn-sm btn-info ms-2" title="Exporter en Excel">
+                    <i class="fas fa-file-excel"></i> Exporter
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
-<style>
-.vote-page .container {
-  background: #f9f9fb;
-  padding: 2rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-}
-.vote-page h2 {
-  color: #2c3e50;
-  margin-bottom: 1.5rem;
-}
-.vote-page ul.treated-classes {
-  list-style: none;
-  padding-left: 0;
-}
-.vote-page li.classe-entry {
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  background-color: #fff;
-  border-radius: 0.5rem;
-  border: 1px solid #ddd;
-}
-.status.generated {
-  color: green;
-  font-weight: bold;
-}
-.status.not-generated {
-  color: red;
-  font-weight: bold;
-}
-.btn {
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  margin-left: 0.5rem;
-}
-.btn-primary {
-  background-color: #2563eb;
-  color: white;
-}
-.btn-danger {
-  background-color: #dc2626;
-  color: white;
-}
-.btn-warning {
-  background-color: #f59e0b;
-  color: white;
-}
-.btn-sm {
-  font-size: 0.8rem;
-}
-.download-section {
-  margin-top: 2rem;
-  text-align: center;
-}
-.download-button {
-  background-color: #10b981;
-  color: white;
-  padding: 0.6rem 1.2rem;
-  text-decoration: none;
-  border-radius: 0.4rem;
-  font-weight: bold;
-}
-.download-button:hover {
-  background-color: #059669;
-}
-</style>
+<!-- Modal de confirmation -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Confirmation requise</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="confirmMessage">
+        <!-- Message dynamique -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-danger" id="confirmButton">Confirmer</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
 
+{% block extra_js %}
+<!-- Chargement de Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Votre fichier JS dédié -->
+<script src="{% static 'js/generer_codes.js' %}"></script>
 {% endblock %}

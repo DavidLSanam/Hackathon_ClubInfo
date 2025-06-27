@@ -55,7 +55,8 @@ urlpatterns = [
     path('importer-emails/', views.importer_emails_autorises_view, name='importer_emails_autorises'),
     path('reinitialiser/<int:email_id>/', views.reinitialiser_matricule, name='reinitialiser_matricule'),
     path('supprimer/<int:email_id>/', views.supprimer_email_autorise, name='supprimer_email_autorise'),
-    path('reset-codes/<int:classe_id>/', views.reset_codes_view, name='reset_codes'),
+    path('reset-codes/<str:classe_code>/', views.reset_codes_view, name='reset_codes'),
     path('resultats/pdf/', views.generate_pdf_report, name='generate_pdf_report'),
-    path('reset-affichage/<int:classe_id>/', views.reset_affichage_codes, name='reset_affichage_codes'),
+    path('reset-affichage/<str:classe_id>/', views.reset_affichage_view, name='reset_affichage_codes'),
+    path('load-details/<str:classe_id>/', views.load_classe_details, name='load_classe_details'),
 ]

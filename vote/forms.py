@@ -63,11 +63,28 @@ class VoteResponsableClasseForm(forms.Form):
 #################GESTION DES MATRICULES################
 
 
-class EffectifClasseForm(forms.ModelForm):
-    class Meta:
-        model = EffectifClasse
-        fields = ['classe', 'nombre_eleves']
+from django import forms
+from .models import Voter
 
+class SelectionClasseForm(forms.Form):
+    classe = forms.ChoiceField(
+        choices=Voter.CLASS_CHOICES,
+        label="Sélectionnez une classe",
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'id': 'id_classe'
+        })
+    )
+
+class GenererCodesForm(forms.Form):
+    nombre_a_generer = forms.IntegerField(
+        min_value=1,
+        label="Nombre de matricules à générer",
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'min': 1
+        })
+    )
 
 
 #################GESTION DES CANDIDATURES################

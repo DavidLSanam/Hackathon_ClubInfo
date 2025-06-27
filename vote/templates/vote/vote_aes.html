@@ -10,13 +10,16 @@
 {% block content %}
 <div class="container">
     <h1>{{ page_title }}</h1>
+    
+    <!-- Token CSRF -->
+    <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
 
     {% for poste in postes %}
-    <div class="poste">
+    <div class="poste" data-poste-id="{{ poste.poste.id }}">
         <h2>{{ poste.poste.nom }}</h2>
         <div class="candidats">
             {% for candidat in poste.candidats %}
-            <div class="card" data-poste-id="{{ poste.poste.id }}">
+            <div class="card">
                 <div class="card-content">
                     {% if candidat.photo %}
                         <img src="{{ candidat.photo }}" alt="Photo de {{ candidat.nom }}" class="avatar">

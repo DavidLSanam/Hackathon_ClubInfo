@@ -19,8 +19,8 @@ import json
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 import json
-from .forms import VoteForm, EffectifClasseForm, CandidatureForm, ClubCandidatureForm, ResponsableClasseCandidatureForm
-from .forms import UploadCandidatExcelForm, UploadEmailsExcelForm
+from .forms import VoteForm, SelectionClasseForm, CandidatureForm, ClubCandidatureForm, ResponsableClasseCandidatureForm
+from .forms import UploadCandidatExcelForm, UploadEmailsExcelForm, GenererCodesForm
 import openpyxl
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
@@ -312,7 +312,7 @@ def upload_candidats(request):
 
 
 
-
+@matricule_required
 def vote_aes(request):
     # Récupère tous les postes avec leurs candidats en une seule requête optimisée
     postes = Poste.objects.prefetch_related('candidats').order_by('code')
@@ -346,49 +346,54 @@ def vote_aes(request):
 
 
 @require_POST
+@csrf_exempt  # Temporaire pour le débogage - à retirer après
 def voter(request):
     try:
         data = json.loads(request.body)
         poste_id = data.get("poste_id")
         candidat_id = data.get("candidat_id")
 
+        # Vérification des données
+        if not poste_id or not candidat_id:
+            return JsonResponse({"error": "Données manquantes"}, status=400)
+
         voter_id = request.session.get("voter_id")
         if not voter_id:
             return JsonResponse({"error": "Non authentifié"}, status=403)
 
-        voter = Voter.objects.get(id=voter_id)
+        try:
+            voter = Voter.objects.get(id=voter_id)
+            candidat = Candidat.objects.get(id=candidat_id, poste_id=poste_id)
+        except (Voter.DoesNotExist, Candidat.DoesNotExist) as e:
+            return JsonResponse({"error": str(e)}, status=404)
 
-        # Vérifie si la personne a déjà voté pour ce poste
+        # Vérifie si l'utilisateur a déjà voté pour ce poste
         if VoteParPoste.objects.filter(voter=voter, poste_id=poste_id).exists():
-            return JsonResponse({"error": "Déjà voté pour ce poste"}, status=400)
+            return JsonResponse({"error": "Vous avez deja vote pour ce poste"}, status=400)
 
-        candidat = Candidat.objects.get(id=candidat_id, poste_id=poste_id)
-
+        # Enregistrement du vote
         VoteParPoste.objects.create(voter=voter, candidat=candidat, poste_id=poste_id)
 
-        # Optionnel : si tous les postes sont remplis, on peut marquer le voter comme ayant voté globalement
-        total_postes = Poste.objects.count()
-        votes_effectues = VoteParPoste.objects.filter(voter=voter).count()
-        if votes_effectues == total_postes:
-            voter.has_voted = True
-            voter.save()
-
-        # Recalculer les résultats pour ce poste
+        # Calcul des résultats
         candidats = Candidat.objects.filter(poste_id=poste_id)
         total_votes = VoteParPoste.objects.filter(poste_id=poste_id).count()
-
+        
         results = {}
         for c in candidats:
             votes = VoteParPoste.objects.filter(candidat=c).count()
             pourcentage = round((votes / total_votes) * 100, 2) if total_votes else 0
-            results[c.id] = pourcentage
+            results[str(c.id)] = pourcentage
 
-        return JsonResponse({"success": True, "results": results})
-    
-    except (KeyError, json.JSONDecodeError):
-        return JsonResponse({"error": "Requête invalide"}, status=400)
-    except Candidat.DoesNotExist:
-        return JsonResponse({"error": "Candidat introuvable"}, status=404)
+        return JsonResponse({
+            "success": True,
+            "message": "Vote enregistré avec succès",
+            "results": results
+        })
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Données JSON invalides"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
     
 
 
@@ -536,65 +541,86 @@ def vote_par_classe_view(request):
 
 #################GESTION DES MATRICULES################
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.views.decorators.http import require_POST
+from django.contrib.admin.views.decorators import staff_member_required
+from django.http import JsonResponse
+from django.utils import timezone
+from .models import EffectifClasse, Voter
+from .forms import SelectionClasseForm, GenererCodesForm
 
+
+@admin_required
 def generer_codes_view(request):
-    if request.method == "POST":
-        form = EffectifClasseForm(request.POST)
-
+    if request.method == "POST" and 'generer_codes' in request.POST:
+        form = GenererCodesForm(request.POST)
         if form.is_valid():
-            classe = form.cleaned_data["classe"]
-            nombre_eleves = form.cleaned_data["nombre_eleves"]
-
-            # Récupérer ou créer l'instance
-            instance, created = EffectifClasse.objects.get_or_create(
-                classe=classe,
-                defaults={'nombre_eleves': nombre_eleves}
-            )
+            classe = request.POST.get('classe')
+            nombre_a_generer = form.cleaned_data['nombre_a_generer']
             
-            # Si l'instance existait déjà, mettre à jour le nombre d'élèves
-            if not created:
-                instance.nombre_eleves = nombre_eleves
-                instance.codes_genere = False  # Réinitialiser ce flag
-                instance.save()
-
-            # Générer les codes
-            instance.generer_codes()
-
-            messages.success(request, f"{instance.nombre_eleves} codes générés pour {instance.classe}.")
-            return redirect("generer_codes")
-    else:
-        form = EffectifClasseForm()
+            # Générer les nouveaux codes
+            codes_generes = []
+            for _ in range(nombre_a_generer):
+                while True:
+                    code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+                    if not Voter.objects.filter(matricule=code).exists():
+                        Voter.objects.create(
+                            matricule=code,
+                            classe=classe,
+                            filiere=Voter.CLASS_TO_FILIERE.get(classe, 'ISE')
+                        )
+                        codes_generes.append(code)
+                        break
+            
+            messages.success(
+                request,
+                f"{nombre_a_generer} nouveaux matricules générés pour la classe {classe}."
+            )
+            return redirect('generer_codes')
+    
+    # Compter les matricules par classe pour l'affichage
+    classes_stats = []
+    for code, nom in Voter.CLASS_CHOICES:
+        count = Voter.objects.filter(classe=code).count()
+        classes_stats.append({
+            'code': code,
+            'nom': nom,
+            'count': count
+        })
 
     context = {
-        "form": form,
-        "classes_existantes": EffectifClasse.objects.all()
+        'selection_form': SelectionClasseForm(),
+        'generer_form': GenererCodesForm(),
+        'classes_stats': sorted(classes_stats, key=lambda x: x['nom'])
     }
     return render(request, "vote/generer_codes.html", context)
 
-
-
-def reset_affichage_codes(request, classe_id):
-    if request.method == "POST":
-        classe = get_object_or_404(EffectifClasse, id=classe_id)
-        classe.codes_genere = False
-        classe.save()
-        messages.info(request, f"L'état de la classe {classe.classe} a été réinitialisé (affichage uniquement).")
-    return redirect("generer_codes")
-
-
-
-from django.views.decorators.http import require_POST
-from django.shortcuts import get_object_or_404
+@require_POST
+def reset_codes_view(request, classe_code):
+    Voter.objects.filter(classe=classe_code).delete()
+    messages.success(request, f"Tous les matricules pour {classe_code} ont été supprimés.")
+    return redirect('generer_codes')
 
 @require_POST
-def reset_codes_view(request, classe_id):
-    effectif = get_object_or_404(EffectifClasse, id=classe_id)
-    Voter.objects.filter(classe=effectif.classe).delete()
-    effectif.codes_genere = False
-    effectif.save()
-    messages.success(request, f"Les codes pour la classe {effectif.classe} ont été réinitialisés.")
-    return redirect("generer_codes")
+def reset_affichage_view(request, classe_id):
+    classe = get_object_or_404(EffectifClasse, id=classe_id)
+    classe.codes_genere = False
+    classe.save()
+    messages.info(request, f"L'affichage des codes pour {classe.classe} a été réinitialisé.")
+    return redirect('generer_codes')
 
+def load_classe_details(request):
+    classe_id = request.GET.get('classe')
+    if classe_id:
+        classe = get_object_or_404(EffectifClasse, id=classe_id)
+        data = {
+            'nombre_eleves': classe.nombre_eleves,
+            'codes_existants': Voter.objects.filter(classe=classe.classe).count(),
+            'date_generation': classe.date_generation.strftime("%d/%m/%Y %H:%M") if classe.date_generation else None
+        }
+        return JsonResponse(data)
+    return JsonResponse({})
 """
 ################ENREGISTREMENT DES CODES##################
 
@@ -627,7 +653,9 @@ def generer_codes_view(request):
 
 
 def export_voters_excel(request):
-    # Création d’un classeur Excel
+    classe = request.GET.get('classe')
+    
+    # Création d'un classeur Excel
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Matricules"
@@ -635,15 +663,23 @@ def export_voters_excel(request):
     # En-têtes
     ws.append(["Matricule", "Classe"])
 
+    # Filtrer par classe si spécifiée
+    queryset = Voter.objects.all()
+    if classe:
+        queryset = queryset.filter(classe=classe)
+
     # Lignes des données
-    for voter in Voter.objects.all():
+    for voter in queryset:
         ws.append([voter.matricule, voter.classe])
+
+    # Nom du fichier
+    filename = f"matricules_{classe}.xlsx" if classe else "matricules.xlsx"
 
     # Réponse HTTP avec fichier attaché
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response["Content-Disposition"] = 'attachment; filename="matricules.xlsx"'
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
     wb.save(response)
     return response
 
@@ -1565,7 +1601,7 @@ def candidature_responsable_view(request):
         'classe_actuelle': voter.classe
     })
 
-
+@matricule_required
 def portail_candidatures(request):
     config = Configuration.get_config()
     if not config.candidatures_ouvertes:
@@ -1609,7 +1645,6 @@ from .models import EmailAutorise, Voter
 logger = logging.getLogger(__name__)
 
 
-@admin_required
 def obtenir_matricule_view(request):
     if request.method == 'POST':
         email = request.POST.get('email', '').strip().lower()

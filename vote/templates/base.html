@@ -3,118 +3,211 @@
 <html lang="fr" data-theme="light">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Plateforme de Vote ENSAE{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     {% block extra_css %}{% endblock %}
+    <link rel="icon" href="{% static 'images/logo_ensae.png' %}">
 </head>
 <body class="{% block body_class %}{% endblock %}">
 
-    <!-- ======= ENTÊTE (NAVBAR) ======= -->
-    <header>
-        <nav class="navbar">
-            <div class="logo-container">
-                <a href="{% url 'accueil' %}">
-                    <img src="{% static 'images/logo_ensae.png' %}" alt="ENSAE Logo" class="logo-img">
-                    <span class="logo-text">ENSAE VOTE</span>
-                </a>
-            </div>
+    <!-- ======= NAVBAR ULTRA MODERNE ======= -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <a href="{% url 'accueil' %}" class="logo-link">
+                <img src="{% static 'images/logo_ensae.png' %}" alt="ENSAE Logo" class="logo-img">
+                <span class="logo-text">ENSAE VOTE</span>
+            </a>
+        </div>
 
-            <div class="burger" id="burger">
-                <div class="bar1"></div>
-                <div class="bar2"></div>
-                <div class="bar3"></div>
-            </div>
+        <!-- Menu Burger Animé -->
+        <div class="burger" id="burger">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+        </div>
 
-            <ul class="nav-links" id="nav-links">
-                <li><a href="{% url 'accueil' %}">Accueil</a></li>
-                <li><a href="{% url 'vote' %}">Vote</a></li>
-                <li><a href="{% url 'results_portal' %}">Résultats</a></li>
-                <li><a href="{% url 'portail_candidatures' %}">Postuler</a></li>
-                
-                {% if request.session.voter_id %}
-                    {% with voter=request.voter %}
-                        {% if voter.is_admin %}
-                            <li>
-                                <a href="{% url 'admin_dashboard' %}" class="admin-link">
-                                    <i class="fas fa-cog"></i> Administration
-                                </a>
-                            </li>
-                        {% endif %}
-                        {% if request.path != '/' and request.path != '/login/' %}
-                            <li><a href="{% url 'logout' %}">Se déconnecter</a></li>
-                        {% endif %}
-                    {% endwith %}
-                {% else %}
-                    <li><a href="{% url 'login' %}">Se connecter</a></li>
-                {% endif %}
-                
-                <li>
-                    <button id="dark-mode-toggle">🌓</button>
-                </li>
-            </ul>
-        </nav>
-    </header>
+        <!-- Navigation Principale avec Icônes -->
+        <ul class="nav-links" id="nav-links">
+            <li><a href="{% url 'accueil' %}"><i class="fas fa-home"></i> Accueil</a></li>
+            <li><a href="{% url 'vote' %}"><i class="fas fa-vote-yea"></i> Vote</a></li>
+            <li><a href="{% url 'results_portal' %}"><i class="fas fa-chart-bar"></i> Résultats</a></li>
+            <li><a href="{% url 'portail_candidatures' %}"><i class="fas fa-user-tie"></i> Postuler</a></li>
+            
+            {% if request.session.voter_id %}
+                {% with voter=request.voter %}
+                    {% if voter.is_admin %}
+                        <li>
+                            <a href="{% url 'admin_dashboard' %}" class="admin-link">
+                                <i class="fas fa-cog"></i> Administration
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if request.path != '/' and request.path != '/login/' %}
+                        <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                    {% endif %}
+                {% endwith %}
+            {% else %}
+                <li class="cta-nav"><a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Connexion</a></li>
+            {% endif %}
+            
+            <li>
+                <button id="dark-mode-toggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </li>
+        </ul>
+    </nav>
 
     <!-- ======= CONTENU PRINCIPAL ======= -->
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- ======= PIED DE PAGE ======= -->
+    <!-- ======= FOOTER ULTRA MODERNE ======= -->
     <footer class="footer">
+        <!-- Effet de vague animé -->
+        <div class="wave"></div>
+        
         <div class="footer-container">
+            <!-- Section Contact -->
             <div class="footer-section">
-                <h3>Nous contacter</h3>
-                <p>Email : ensae.vote@domaine.sn</p>
-                <p>Téléphone : +221 77 000 00 00</p>
-            </div>
-            <div class="footer-section">
-                <h3>Nous suivre</h3>
-                <div class="socials">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
+                <h3><i class="fas fa-envelope-open-text"></i> Nous contacter</h3>
+                <div class="contact-info">
+                    <div><i class="fas fa-envelope"></i> ensae.vote@domaine.sn</div>
+                    <div><i class="fas fa-phone"></i> +221 77 000 00 00</div>
+                    <div><i class="fas fa-map-marker-alt"></i> ENSAE Dakar, Sénégal</div>
                 </div>
             </div>
+
+            <!-- Section Réseaux Sociaux -->
             <div class="footer-section">
-                <h3>À propos</h3>
-                <p>Plateforme conçue pour faciliter les élections à l'ENSAE Dakar.</p>
-                <p>Design by <strong>David SANAM</strong> & <strong>Lamerveille NGUIMKENG</strong></p>
+                <h3><i class="fas fa-share-alt"></i> Nous suivre</h3>
+                <div class="socials">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+                
+                <!-- Newsletter -->
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Votre email" required>
+                    <button type="submit" aria-label="S'abonner">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Section À Propos -->
+            <div class="footer-section">
+                <h3><i class="fas fa-info-circle"></i> À propos</h3>
+                <p>Plateforme sécurisée de vote électronique pour les élections étudiantes de l'ENSAE Dakar.</p>
+                <p class="credits">
+                    <i class="fas fa-code"></i> Développé par <strong>David SANAM</strong><br>
+                    <i class="fas fa-paint-brush"></i> Design par <strong>Lamerveille NGUIMKENG</strong>
+                </p>
+            </div>
+
+            <!-- Section Liens Utiles -->
+            <div class="footer-section">
+                <h3><i class="fas fa-link"></i> Liens utiles</h3>
+                <a href="{% url 'accueil' %}"><i class="fas fa-chevron-right"></i> Accueil</a><br>
+                <a href="{% url 'vote' %}"><i class="fas fa-chevron-right"></i> Procédure de vote</a><br>
+                <a href="{% url 'results_portal' %}"><i class="fas fa-chevron-right"></i> Résultats</a><br>
+                <a href="{% url 'portail_candidatures' %}"><i class="fas fa-chevron-right"></i> Candidatures</a>
             </div>
         </div>
-        <div class="copyright">
-            &copy; {{ year|default:"2025" }} ENSAE VOTE. Tous droits réservés.
+
+        <!-- Copyright -->
+        <div class="footer-bottom">
+            <div class="copyright">
+                &copy; {{ year|default:"2025" }} ENSAE VOTE. Tous droits réservés.
+                <span class="separator">|</span>
+                <a href="#">Politique de confidentialité</a>
+                <span class="separator">|</span>
+                <a href="#">Conditions d'utilisation</a>
+            </div>
         </div>
     </footer>
 
-    <script>
-        // Burger toggle
-        const burger = document.getElementById("burger");
-        const navLinks = document.getElementById("nav-links");
+    <!-- Bouton Retour en Haut -->
+    <div class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
 
-        burger.addEventListener("click", () => {
-            burger.classList.toggle("open");
-            navLinks.classList.toggle("active");
-        });
-
-        // Mode sombre
-        const toggle = document.getElementById("dark-mode-toggle");
-        const html = document.documentElement;
-
-        toggle.addEventListener("click", () => {
-            const isDark = html.getAttribute("data-theme") === "dark";
-            html.setAttribute("data-theme", isDark ? "light" : "dark");
-        });
-    </script>
-
+    <!-- Données JSON -->
     <script id="candidates-data" type="application/json">{{ candidates_json|safe }}</script>
     <script id="participation-data" type="application/json">{{ participation_json|safe }}</script>
     <script id="timeline-data" type="application/json">{{ timeline_json|safe }}</script>
 
+    <!-- Scripts -->
     {% block extra_js %}
     <script src="{% static 'js/base.js' %}"></script>
     {% endblock %}
+
+    <script>
+        // Initialisation du dark mode
+        document.addEventListener('DOMContentLoaded', function() {
+            // Burger Menu
+            const burger = document.getElementById("burger");
+            const navLinks = document.getElementById("nav-links");
+            
+            burger.addEventListener("click", () => {
+                burger.classList.toggle("open");
+                navLinks.classList.toggle("active");
+                document.body.classList.toggle("no-scroll");
+            });
+
+            // Fermer le menu quand on clique sur un lien
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    burger.classList.remove("open");
+                    navLinks.classList.remove("active");
+                    document.body.classList.remove("no-scroll");
+                });
+            });
+
+            // Dark Mode Toggle
+            const toggle = document.getElementById("dark-mode-toggle");
+            const html = document.documentElement;
+            const icon = toggle.querySelector('i');
+
+            // Vérifier le thème sauvegardé ou les préférences système
+            const savedTheme = localStorage.getItem('theme') || 
+                             (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            
+            html.setAttribute('data-theme', savedTheme);
+            updateIcon(savedTheme);
+
+            toggle.addEventListener('click', () => {
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateIcon(newTheme);
+                
+                // Animation de l'icône
+                icon.classList.add('pulse');
+                setTimeout(() => icon.classList.remove('pulse'), 1000);
+            });
+
+            function updateIcon(theme) {
+                icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            }
+
+            // Écouter les changements de préférence système
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (!localStorage.getItem('theme')) {
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    html.setAttribute('data-theme', newTheme);
+                    updateIcon(newTheme);
+                }
+            });
+        });
+    </script>
 </body>
 </html>

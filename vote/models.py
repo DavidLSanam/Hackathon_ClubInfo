@@ -143,41 +143,70 @@ class VoteParPoste(models.Model):
 
 
 
+from django.db import models
 import random
 import string
-from .models import Voter  # si ce n'est pas déjà importé
+from django.core.exceptions import ValidationError
 
 class EffectifClasse(models.Model):
-    classe = models.CharField(max_length=100, unique=True)
-    nombre_eleves = models.PositiveIntegerField()
-    codes_genere = models.BooleanField(default=False)
+    classe = models.CharField(max_length=100, unique=True, verbose_name="Nom de la classe")
+    nombre_eleves = models.PositiveIntegerField(verbose_name="Nombre d'élèves", default=0)
+    codes_genere = models.BooleanField(default=False, verbose_name="Codes générés")
+    date_generation = models.DateTimeField(null=True, blank=True, verbose_name="Date de génération")
 
-    def generer_codes(self):
+    def clean(self):
+        # Validation pour éviter les nombres négatifs
+        if self.nombre_eleves < 1:
+            raise ValidationError("Le nombre d'élèves doit être positif")
+
+    def generer_codes(self, request):
         """
-        Génère les codes manquants pour cette classe sans supprimer les existants.
+        Génère les codes manquants pour cette classe
         """
-        deja_generes = Voter.objects.filter(classe=self.classe).count()
-        a_generer = self.nombre_eleves - deja_generes
+        # Compter les codes existants
+        codes_existants = Voter.objects.filter(classe=self.classe).count()
+        
+        # Calculer combien de nouveaux codes générer
+        nouveaux_codes = self.nombre_eleves - codes_existants
+        
+        if nouveaux_codes < 0:
+            # Si on a réduit le nombre d'élèves
+            return False, f"Attention: Vous avez réduit le nombre d'élèves à {self.nombre_eleves} alors qu'il y a déjà {codes_existants} codes générés."
 
-        if a_generer <= 0:
-            # Aucun code supplémentaire nécessaire
-            return
+        if nouveaux_codes == 0:
+            # Aucun nouveau code à générer
+            return True, f"Aucun nouveau code nécessaire. La classe {self.classe} a déjà {codes_existants} codes."
 
-        for _ in range(a_generer):
+        # Générer les nouveaux codes
+        codes_generes = []
+        for _ in range(nouveaux_codes):
             code = self._generer_code_unique()
             Voter.objects.create(matricule=code, classe=self.classe)
+            codes_generes.append(code)
 
+        # Mettre à jour les flags
         self.codes_genere = True
+        self.date_generation = timezone.now()
         self.save()
+        
+        return True, f"{nouveaux_codes} nouveaux codes générés pour {self.classe}. Total: {self.nombre_eleves} codes."
 
-    def _generer_code_unique(self, longueur=6):
-        """
-        Génère un code alphanumérique unique de longueur donnée.
-        """
+    def _generer_code_unique(self, longueur=8):
+        """Génère un code alphanumérique unique"""
         while True:
-            code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=longueur))
+            # 4 lettres + 4 chiffres pour plus de lisibilité
+            lettres = ''.join(random.choices(string.ascii_uppercase, k=4))
+            chiffres = ''.join(random.choices(string.digits, k=4))
+            code = f"{lettres}{chiffres}"
             if not Voter.objects.filter(matricule=code).exists():
                 return code
+
+    def __str__(self):
+        return f"{self.classe} ({self.nombre_eleves} élèves)"
+
+    class Meta:
+        verbose_name = "Effectif de classe"
+        verbose_name_plural = "Effectifs des classes"
 
 
 
