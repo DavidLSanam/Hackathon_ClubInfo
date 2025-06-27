@@ -21,7 +21,7 @@ body {
 /* HERO - NOUVEAU DESIGN */
 .hero {
   background: linear-gradient(135deg, rgba(0, 56, 101, 0.85) 0%, rgba(0, 123, 255, 0.85) 100%), 
-              url('https://images.unsplash.com/photo-1551524559-8af4e6624178?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80') center center/cover no-repeat;
+              url('../images/vote.jpg') center center/cover no-repeat;
   height: 90vh;
   position: relative;
   color: white;
