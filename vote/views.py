@@ -1771,21 +1771,19 @@ def supprimer_email_autorise(request, email_id):
 ################GENERATION DU RAPPORT######################
 
 
-from django.http import HttpResponse
-from reportlab.lib.pagesizes import letter, landscape
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
+from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib.units import inch
+from django.http import HttpResponse
 from io import BytesIO
-from datetime import datetime
-import matplotlib
-matplotlib.use('Agg')  # ⛔ Ne pas utiliser GUI
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-
-from .models import Poste, Candidat, VoteParPoste, Voter
+from django.db import models
+from datetime import datetime
 
 def generate_pdf_report(request):
     buffer = BytesIO()
@@ -1796,19 +1794,89 @@ def generate_pdf_report(request):
     image_buffers = []
 
     try:
+        # Définition des styles avancés
         styles = getSampleStyleSheet()
-        title_style = ParagraphStyle('Title', parent=styles['Heading1'], alignment=1, spaceAfter=20,
-                                     textColor=colors.HexColor('#2c3e50'), fontName='Helvetica-Bold')
-        subtitle_style = ParagraphStyle('Subtitle', parent=styles['Heading2'], alignment=1, spaceAfter=10)
-        section_style = ParagraphStyle('Section', parent=styles['Heading3'], spaceBefore=10, spaceAfter=10)
+        
+        # Style pour le titre principal
+        title_style = ParagraphStyle(
+            'Title',
+            parent=styles['Heading1'],
+            alignment=TA_CENTER,
+            spaceAfter=20,
+            textColor=colors.HexColor('#2c3e50'),
+            fontName='Helvetica-Bold',
+            fontSize=18
+        )
+        
+        # Style pour le sous-titre
+        subtitle_style = ParagraphStyle(
+            'Subtitle',
+            parent=styles['Heading2'],
+            alignment=TA_CENTER,
+            spaceAfter=15,
+            textColor=colors.HexColor('#7f8c8d'),
+            fontName='Helvetica'
+        )
+        
+        # Style pour les sections
+        section_style = ParagraphStyle(
+            'Section',
+            parent=styles['Heading3'],
+            spaceBefore=15,
+            spaceAfter=10,
+            textColor=colors.HexColor('#2980b9'),
+            fontName='Helvetica-Bold',
+            fontSize=14,
+            underline=True
+        )
+        
+        # Style pour les sous-sections
+        subsection_style = ParagraphStyle(
+            'Subsection',
+            parent=styles['Heading4'],
+            spaceBefore=10,
+            spaceAfter=5,
+            textColor=colors.HexColor('#16a085'),
+            fontName='Helvetica-Bold'
+        )
+        
+        # Style pour le texte normal
+        normal_style = ParagraphStyle(
+            'Normal',
+            parent=styles['Normal'],
+            spaceAfter=5,
+            textColor=colors.HexColor('#34495e'),
+            fontName='Helvetica'
+        )
 
-        # Titre
+        # Titre principal
         elements.append(Paragraph("RAPPORT DÉTAILLÉ DES RÉSULTATS ÉLECTORAUX", title_style))
         elements.append(Paragraph(f"Élections de l'AES - Année {datetime.now().year}", subtitle_style))
         elements.append(Spacer(1, 0.5 * inch))
+        
+        # Introduction textuelle
+        intro_text = """
+        <para align=center spaceAfter=15>
+            Ce rapport présente les résultats détaillés des élections de l'AES pour l'année en cours. 
+            Vous y trouverez les statistiques de participation par filière ainsi que les résultats 
+            complets pour chaque poste à pourvoir.
+        </para>
+        """
+        elements.append(Paragraph(intro_text, normal_style))
+        elements.append(Spacer(1, 0.3 * inch))
 
         # Section Participation par Filière
         elements.append(Paragraph("PARTICIPATION PAR FILIÈRE", section_style))
+        
+        # Texte explicatif avant le graphique
+        desc_text = """
+        <para align=left spaceAfter=10>
+            Le graphique ci-dessous présente le taux de participation des électeurs par filière. 
+            Ce taux est calculé en divisant le nombre de votants par le nombre total d'électeurs inscrits.
+        </para>
+        """
+        elements.append(Paragraph(desc_text, normal_style))
+        
         filieres = ['ISE', 'AS']
         participation_data = []
 
@@ -1819,9 +1887,35 @@ def generate_pdf_report(request):
                 'Filière': filiere,
                 'Inscrits': total,
                 'Votants': votes,
-                'Taux': (votes / total * 100) if total > 0 else 0
+                'Taux': (votes / total * 100) if total > 0 else 0  # Retirer le formatage en pourcentage
             })
 
+        # Ajout du tableau de données sous forme textuelle
+        participation_table_data = [['Filière', 'Inscrits', 'Votants', 'Taux de participation']]
+        participation_table_data.extend([
+            [d['Filière'], str(d['Inscrits']), str(d['Votants']), d['Taux']] 
+            for d in participation_data
+        ])
+        
+        participation_table = Table(
+            participation_table_data, 
+            colWidths=[1.5*inch, 1.5*inch, 1.5*inch, 2*inch],
+            hAlign='CENTER'
+        )
+        participation_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3498db')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#ecf0f1')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#bdc3c7')),
+        ]))
+        elements.append(participation_table)
+        elements.append(Spacer(1, 0.3 * inch))
+        
+        # Graphique de participation
         participation_df = pd.DataFrame(participation_data)
         plt.figure(figsize=(8, 4))
         sns.set_theme(style="whitegrid")
@@ -1830,13 +1924,21 @@ def generate_pdf_report(request):
         ax.set_ylabel('Taux de participation (%)')
         ax.set_ylim(0, 100)
 
+        # Ajouter les valeurs sur les barres
+        for p in ax.patches:
+            ax.annotate(f"{p.get_height():.1f}%", 
+                        (p.get_x() + p.get_width() / 2., p.get_height()),
+                        ha='center', va='center', 
+                        xytext=(0, 10), 
+                        textcoords='offset points')
+
         img_buffer = BytesIO()
         plt.savefig(img_buffer, format='png', bbox_inches='tight', dpi=300)
         plt.close()
         img_buffer.seek(0)
         image_buffers.append(img_buffer)
         elements.append(Image(img_buffer, width=6 * inch, height=3 * inch))
-        elements.append(Spacer(1, 0.3 * inch))
+        elements.append(Spacer(1, 0.5 * inch))
 
         # Résultats par Poste
         elements.append(Paragraph("RÉSULTATS DÉTAILLÉS PAR POSTE", section_style))
@@ -1850,25 +1952,55 @@ def generate_pdf_report(request):
             if not candidats.exists():
                 continue
 
-            data = [['Nom', 'Classe', 'Votes']]
+            # Titre du poste avec description
+            elements.append(Paragraph(poste.nom.upper(), subsection_style))
+            elements.append(Spacer(1, 0.1 * inch))
+            
+            # Tableau des résultats
+            data = [['Nom', 'Classe', 'Votes', '% des votes']]
+            total_votes = sum(c.vote_count for c in candidats)
+            
             for c in candidats:
                 classe_label = getattr(c.classe, 'nom', c.classe)
-                data.append([c.nom, classe_label if classe_label else '-', c.vote_count])
+                vote_pct = (c.vote_count / total_votes * 100) if total_votes > 0 else 0
+                data.append([
+                    c.nom, 
+                    classe_label if classe_label else '-', 
+                    str(c.vote_count),
+                    f"{vote_pct:.1f}%"
+                ])
 
-
-            table = Table(data, hAlign='LEFT', colWidths=[3 * inch, 2 * inch, 1 * inch])
+            table = Table(
+                data, 
+                hAlign='LEFT', 
+                colWidths=[2.5 * inch, 2 * inch, 1 * inch, 1 * inch]
+            )
             table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.lightblue),
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2ecc71')),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-                ('ALIGN', (2, 1), (2, -1), 'CENTER'),
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('ALIGN', (2, 1), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#eafaf1')),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#bdc3c7')),
             ]))
-            elements.append(Paragraph(poste.nom, styles['Heading4']))
             elements.append(table)
+            elements.append(Spacer(1, 0.2 * inch))
 
-            # Graphique
-            chart_data = [{'Candidat': c.nom[:15] + '...' if len(c.nom) > 15 else c.nom, 'Votes': c.vote_count}
-                          for c in candidats]
+            # Analyse textuelle des résultats
+            if total_votes > 0:
+                premier = candidats.first()
+                vote_pct = (premier.vote_count / total_votes * 100)
+                result_text = f"""
+                <para align=left spaceAfter=10>
+                    <b>Analyse :</b> Avec {premier.vote_count} votes ({vote_pct:.1f}%), 
+                    <b>{premier.nom}</b> arrive en tête du scrutin pour le poste de {poste.nom}.
+                </para>
+                """
+                elements.append(Paragraph(result_text, normal_style))
+
+            # Graphique des résultats
+            chart_data = [{'Candidat': c.nom[:15] + '...' if len(c.nom) > 15 else c.nom, 
+                          'Votes': c.vote_count} for c in candidats]
             chart_df = pd.DataFrame(chart_data)
 
             plt.figure(figsize=(8, 4))
@@ -1884,11 +2016,30 @@ def generate_pdf_report(request):
             plt.close()
             poste_buffer.seek(0)
             image_buffers.append(poste_buffer)
-            elements.append(Spacer(1, 0.2 * inch))
             elements.append(Image(poste_buffer, width=6 * inch, height=3 * inch))
             elements.append(Spacer(1, 0.5 * inch))
 
-        # Générer le document PDF
+        # Conclusion du rapport
+        elements.append(Paragraph("CONCLUSION", section_style))
+        conclusion_text = """
+        <para align=left spaceAfter=10>
+            Ce rapport complet présente l'ensemble des résultats des élections de l'AES. 
+            Les données montrent la participation électorale et les choix des votants pour chaque poste.
+            Ces résultats peuvent servir de base pour analyser les tendances et préparer les futures élections.
+        </para>
+        """
+        elements.append(Paragraph(conclusion_text, normal_style))
+        elements.append(Spacer(1, 0.5 * inch))
+
+        # Pied de page
+        footer_text = f"""
+        <para align=center spaceBefore=10 fontSize=8>
+            Rapport généré le {datetime.now().strftime('%d/%m/%Y à %H:%M')} - Système de vote AES
+        </para>
+        """
+        elements.append(Paragraph(footer_text, normal_style))
+
+        # Génération du PDF
         doc.build(elements)
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="rapport_elections_aes.pdf"'
@@ -1899,4 +2050,4 @@ def generate_pdf_report(request):
         buffer.close()
         for buf in image_buffers:
             buf.close()
-        plt.close('all')  # Fermer toutes les figures résiduelles
+        plt.close('all')

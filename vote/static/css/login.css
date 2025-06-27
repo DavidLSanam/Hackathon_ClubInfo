@@ -118,3 +118,55 @@ button:hover {
 .login-link button {
   width: 100%;
 }
+
+/* Responsive styles for small screens */
+@media only screen and (max-width: 600px) {
+  .vote-page {
+    padding: 20px;
+  }
+  
+  .login-container {
+    width: 85%;
+    padding: 30px 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+  }
+  
+  input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  button {
+    width: 100%;
+    padding: 12px;
+  }
+  
+  .matricule-display {
+    font-size: 1.4rem;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+  }
+  
+  .copy-btn {
+    margin-top: 5px;
+  }
+}
+
+/* Pour les très petits écrans (moins de 400px) */
+@media only screen and (max-width: 400px) {
+  .login-container {
+    width: 95%;
+    padding: 25px 15px;
+  }
+  
+  h2 {
+    font-size: 1.3rem;
+  }
+  
+  .matricule-display {
+    font-size: 1.2rem;
+  }
+}

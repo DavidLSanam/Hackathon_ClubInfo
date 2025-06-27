@@ -392,3 +392,148 @@
 }
 
 /* Responsive
+
+/* Responsive styles for tablets and smaller devices */
+@media only screen and (max-width: 992px) {
+    .admin-sections {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+}
+
+/* Responsive styles for mobile devices */
+@media only screen and (max-width: 768px) {
+    .admin-container {
+        padding: 15px;
+    }
+    
+    .admin-sections {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-card {
+        padding: 15px;
+    }
+    
+    .tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 5px;
+    }
+    
+    .tab-btn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .vote-type-buttons {
+        flex-direction: column;
+    }
+    
+    .vote-type-btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .participation-item {
+        flex-wrap: wrap;
+    }
+    
+    .classe {
+        min-width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        order: 1;
+    }
+    
+    .counts, .percentage {
+        min-width: auto;
+    }
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+    .admin-container {
+        padding: 10px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-item {
+        padding: 10px;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .admin-card h2 {
+        font-size: 1.2rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .admin-list li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .codes-display .code-item {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .copy-btn {
+        align-self: flex-end;
+    }
+    
+    .participation-chart {
+        margin-top: 15px;
+    }
+}
+
+/* Super small devices (phones under 400px) */
+@media only screen and (max-width: 400px) {
+    .admin-card {
+        padding: 12px;
+    }
+    
+    .admin-card input,
+    .admin-card select,
+    .admin-card textarea,
+    .admin-card button {
+        padding: 8px 10px;
+    }
+    
+    .stat-number {
+        font-size: 1.3rem;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+    }
+    
+    .tab-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+    
+    .admin-button {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+}
