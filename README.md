@@ -58,4 +58,13 @@ Outre l'import des emails et la génération de matricules, les administrateurs 
 - Toujours dans la vue admin, on peut générer, contrôler et supprimer un certain nombre de matricules administrateurs pour les membres du commité electoral au besoin. Seul un utilisateur connecté avec un matricule administrateur a accès à la page "Administration" dans le menu.
 - Générer des rapports pdf sur les votes
 
+<<<<<<< HEAD
 Toutes les autres fonctionnalités sont disponibles dans l'application.
+=======
+Toutes les autres fonctionnalités sont disponibles dans l'application.
+Points de connexion disponibles :
+Matricule classique : 77188
+Matricule admin : 77187
+
+Actuellement, toutes les fonctionnalités ne sont pas opérationnelles à 100%, le développement est toujours en cours et sera finalisé sous peu au cas où l'application serait retenue.
+>>>>>>> c756550c3ef57003bc05656fd0ed77c6f3519a59
