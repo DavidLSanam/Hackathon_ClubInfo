@@ -59,4 +59,6 @@ urlpatterns = [
     path('resultats/pdf/', views.generate_pdf_report, name='generate_pdf_report'),
     path('reset-affichage/<str:classe_id>/', views.reset_affichage_view, name='reset_affichage_codes'),
     path('load-details/<str:classe_id>/', views.load_classe_details, name='load_classe_details'),
+    path('controler-periode-avance/', views.controler_periode_avance, name='controler_periode_avance'),
+    path('api/period-status-avance/', views.period_status_avance, name='period_status_avance'),
 ]

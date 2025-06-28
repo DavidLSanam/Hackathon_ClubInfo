@@ -211,6 +211,46 @@ console.log("Données reçues :", {
             <button onclick="toggleVotes(false)" class="danger">🚫 Fermer les votes</button>
         </div>
 
+
+        <!-- Section 3 prime : Contrôle avancé des périodes -->
+        <div class="admin-card">
+            <h2>🕓 Contrôle avancé des périodes</h2>
+            
+            <!-- Bureau AES -->
+            <div class="period-control-group">
+                <h3>Bureau AES</h3>
+                <div class="period-control-buttons">
+                    <button onclick="togglePeriod('aes', 'candidature', true)">📢 Ouvrir candidatures</button>
+                    <button onclick="togglePeriod('aes', 'candidature', false)" class="danger">✖️ Fermer candidatures</button>
+                    <button onclick="togglePeriod('aes', 'vote', true)">✅ Ouvrir votes</button>
+                    <button onclick="togglePeriod('aes', 'vote', false)" class="danger">🚫 Fermer votes</button>
+                </div>
+            </div>
+            
+            <!-- Présidents de club -->
+            <div class="period-control-group">
+                <h3>Présidents de club</h3>
+                <div class="period-control-buttons">
+                    <button onclick="togglePeriod('club', 'candidature', true)">📢 Ouvrir candidatures</button>
+                    <button onclick="togglePeriod('club', 'candidature', false)" class="danger">✖️ Fermer candidatures</button>
+                    <button onclick="togglePeriod('club', 'vote', true)">✅ Ouvrir votes</button>
+                    <button onclick="togglePeriod('club', 'vote', false)" class="danger">🚫 Fermer votes</button>
+                </div>
+            </div>
+            
+            <!-- Responsables de classe -->
+            <div class="period-control-group">
+                <h3>Responsables de classe</h3>
+                <div class="period-control-buttons">
+                    <button onclick="togglePeriod('classe', 'candidature', true)">📢 Ouvrir candidatures</button>
+                    <button onclick="togglePeriod('classe', 'candidature', false)" class="danger">✖️ Fermer candidatures</button>
+                    <button onclick="togglePeriod('classe', 'vote', true)">✅ Ouvrir votes</button>
+                    <button onclick="togglePeriod('classe', 'vote', false)" class="danger">🚫 Fermer votes</button>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Section 4 : Gestion des admins -->
         <div class="admin-card">
             <h2>🔐 Comité électoral</h2>

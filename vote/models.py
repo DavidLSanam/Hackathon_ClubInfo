@@ -342,6 +342,18 @@ class AccessControl(models.Model):
 class Configuration(models.Model):
     candidatures_ouvertes = models.BooleanField(default=False)
     votes_ouverts = models.BooleanField(default=False)
+
+        # AES
+    aes_candidatures_ouvertes = models.BooleanField(default=False)
+    aes_votes_ouverts = models.BooleanField(default=False)
+    
+    # Clubs
+    club_candidatures_ouvertes = models.BooleanField(default=False)
+    club_votes_ouverts = models.BooleanField(default=False)
+    
+    # Responsables de classe
+    classe_candidatures_ouvertes = models.BooleanField(default=False)
+    classe_votes_ouverts = models.BooleanField(default=False)
     
     @classmethod
     def get_config(cls):

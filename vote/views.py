@@ -314,6 +314,11 @@ def upload_candidats(request):
 
 @matricule_required
 def vote_aes(request):
+
+    config = Configuration.get_config()
+    if not config.aes_votes_ouverts:
+        return redirect('access_closed_vote')
+
     # Récupère tous les postes avec leurs candidats en une seule requête optimisée
     postes = Poste.objects.prefetch_related('candidats').order_by('code')
     
@@ -694,6 +699,12 @@ def telechargement_view(request):
 
 @matricule_required
 def candidature_view(request):
+
+    config = Configuration.get_config()
+    # Correction ici : vérifier classe_candidatures_ouvertes au lieu de classe_votes_ouverts
+    if not config.aes_candidatures_ouvertes:
+        return redirect('access_closed')
+
     voter = request.voter  # injecté par le décorateur
 
     if request.method == 'POST':
@@ -1010,6 +1021,86 @@ def controler_periode(request):
         return JsonResponse({'success': False, 'message': f'Erreur serveur: {str(e)}'}, status=500)
 
 
+
+@require_POST
+@admin_required
+def controler_periode_avance(request):
+    try:
+        print("Paramètres reçus:", request.POST)  # Debug
+        config = Configuration.get_config()
+        action = request.POST.get('action', '').lower()
+        vote_type = request.POST.get('vote_type', '').lower()
+        
+        # Validation des paramètres
+        if not action or not vote_type:
+            return JsonResponse({'success': False, 'message': 'Paramètres manquants'}, status=400)
+            
+        if vote_type not in ['aes', 'club', 'classe']:
+            return JsonResponse({'success': False, 'message': 'Type de vote invalide'}, status=400)
+
+        # Détermination du champ à modifier
+        if 'candidature' in action:
+            field_name = f"{vote_type}_candidatures_ouvertes"
+            new_value = 'open' in action
+        elif 'vote' in action:
+            field_name = f"{vote_type}_votes_ouverts"
+            new_value = 'open' in action
+        else:
+            return JsonResponse({'success': False, 'message': 'Action non reconnue'}, status=400)
+
+        print(f"Tentative de modification - Champ: {field_name}, Valeur: {new_value}")  # Debug
+        
+        # Vérification que le champ existe
+        if not hasattr(config, field_name):
+            return JsonResponse({'success': False, 'message': 'Configuration invalide'}, status=400)
+
+        # Application du changement
+        setattr(config, field_name, new_value)
+        config.save()
+        
+        # Vérification que le changement a bien été appliqué
+        config.refresh_from_db()
+        print(f"Vérification après sauvegarde - {field_name}: {getattr(config, field_name)}")  # Debug
+        
+        message = f"Statut des {'candidatures' if 'candidature' in action else 'votes'} mis à jour"
+        return JsonResponse({'success': True, 'message': message})
+        
+    except Exception as e:
+        logger.exception("Erreur dans controler_periode_avance")
+        return JsonResponse({'success': False, 'message': 'Erreur serveur'}, status=500)
+    
+
+def get_vote_type_name(vote_type):
+    names = {
+        'aes': 'élections AES',
+        'club': 'présidences de club',
+        'classe': 'responsables de classe'
+    }
+    return names.get(vote_type, 'élections')
+
+
+def period_status_avance(request):
+    config = Configuration.get_config()
+    return JsonResponse({
+        'success': True,
+        'aes': {
+            'candidatures_ouvertes': config.aes_candidatures_ouvertes,
+            'votes_ouverts': config.aes_votes_ouverts
+        },
+        'club': {
+            'candidatures_ouvertes': config.club_candidatures_ouvertes,
+            'votes_ouverts': config.club_votes_ouverts
+        },
+        'classe': {
+            'candidatures_ouvertes': config.classe_candidatures_ouvertes,
+            'votes_ouverts': config.classe_votes_ouvertes
+        }
+    })
+
+
+
+
+
 ################MATRICULES ADMINS##################
 
 
@@ -1062,6 +1153,15 @@ def supprimer_admin(request):
 
 @matricule_required
 def vote_responsables_classe(request):
+
+    config = Configuration.get_config()
+    print(f"DEBUG - Votes responsables classe ouverts ? {config.classe_votes_ouverts}") 
+
+    # Correction ici : vérifier classe_candidatures_ouvertes au lieu de classe_votes_ouverts
+    if not config.classe_votes_ouverts:
+        return redirect('access_closed_vote')
+
+
     voter = request.voter
     
     # Récupère les postes spécifiques
@@ -1304,6 +1404,12 @@ def results_portal(request):
 
 @matricule_required
 def vote_club(request):
+
+    config = Configuration.get_config()
+    # Correction ici : vérifier classe_candidatures_ouvertes au lieu de classe_votes_ouverts
+    if not config.club_votes_ouverts:
+        return redirect('access_closed_vote')
+
     clubs = Club.objects.prefetch_related('candidats').all()
     
     # Vérifier si l'utilisateur a déjà voté pour chaque club
@@ -1507,6 +1613,12 @@ def results_club_view(request):
 
 @matricule_required
 def candidature_club_view(request):
+
+
+    config = Configuration.get_config()
+    if not config.club_candidatures_ouvertes:
+        return redirect('access_closed')
+
     voter = request.voter  # injecté par le décorateur
 
     # Vérifier si l'utilisateur est déjà candidat
@@ -1558,6 +1670,11 @@ def candidature_club_view(request):
 
 @matricule_required
 def candidature_responsable_view(request):
+
+    config = Configuration.get_config()
+    if not config.classe_candidatures_ouvertes:
+        return redirect('access_closed_vote')
+
     voter = request.voter
 
     # Vérifier si l'utilisateur est déjà candidat

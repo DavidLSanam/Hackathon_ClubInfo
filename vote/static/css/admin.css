@@ -537,3 +537,31 @@
         font-size: 0.9rem;
     }
 }
+
+
+/* Contrôle avancé des périodes */
+.period-control-group {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.period-control-group:last-child {
+    border-bottom: none;
+}
+
+.period-control-group h3 {
+    margin-bottom: 0.5rem;
+    color: #555;
+}
+
+.period-control-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.period-control-buttons button {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+}
