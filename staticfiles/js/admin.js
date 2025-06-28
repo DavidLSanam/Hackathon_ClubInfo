@@ -537,6 +537,111 @@ async function toggleVotes(open) {
     }
 }
 
+
+// Fonction pour contrôler les périodes avancées
+async function togglePeriod(voteType, periodType, open) {
+    // Correction ici : utilisez 'candidature' ou 'vote' directement
+    const action = open ? `open_${periodType}s` : `close_${periodType}s`;
+    const buttonText = `${open ? 'Ouvrir' : 'Fermer'} ${periodType === 'candidature' ? 'candidatures' : 'votes'}`;
+    
+    try {
+        const button = document.querySelector(`button[onclick="togglePeriod('${voteType}', '${periodType}', ${open})"]`);
+        button.classList.add('loading');
+        button.textContent = 'En cours...';
+        
+        // Debug: afficher les paramètres envoyés
+        console.log(`Envoi au serveur - action: ${action}, vote_type: ${voteType}`);
+        
+        const response = await fetch('/controler-periode-avance/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                action: action,
+                vote_type: voteType
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Réponse du serveur:', data); // Debug
+        
+        if (!data.success) {
+            throw new Error(data.message || 'Action échouée');
+        }
+
+        showMessage(data.message, true);
+        
+        // Recharger l'état après modification
+        await loadPeriodStatus();
+        
+    } catch (error) {
+        console.error('Erreur:', error);
+        showMessage(`Échec de l'opération: ${error.message}`, false);
+    } finally {
+        const button = document.querySelector(`button[onclick="togglePeriod('${voteType}', '${periodType}', ${open})"]`);
+        if (button) {
+            button.classList.remove('loading');
+            button.textContent = buttonText;
+        }
+    }
+}
+
+// Fonction pour charger l'état initial des périodes
+async function loadPeriodStatus() {
+    try {
+        const response = await fetch('/api/period-status-avance/');
+        const data = await response.json();
+        
+        if (data.success) {
+            // Mettre à jour l'apparence des boutons pour chaque type
+            updatePeriodButtons('aes', data.aes);
+            updatePeriodButtons('club', data.club);
+            updatePeriodButtons('classe', data.classe);
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement du statut des périodes:', error);
+    }
+}
+
+function updatePeriodButtons(voteType, status) {
+    // Candidatures
+    const openCandButton = document.querySelector(`button[onclick="togglePeriod('${voteType}', 'candidature', true)"]`);
+    const closeCandButton = document.querySelector(`button[onclick="togglePeriod('${voteType}', 'candidature', false)"]`);
+    
+    if (status.candidatures_ouvertes) {
+        openCandButton.style.backgroundColor = '#4CAF50';
+        closeCandButton.style.backgroundColor = '';
+    } else {
+        closeCandButton.style.backgroundColor = '#F44336';
+        openCandButton.style.backgroundColor = '';
+    }
+    
+    // Votes
+    const openVoteButton = document.querySelector(`button[onclick="togglePeriod('${voteType}', 'vote', true)"]`);
+    const closeVoteButton = document.querySelector(`button[onclick="togglePeriod('${voteType}', 'vote', false)"]`);
+    
+    if (status.votes_ouverts) {
+        openVoteButton.style.backgroundColor = '#4CAF50';
+        closeVoteButton.style.backgroundColor = '';
+    } else {
+        closeVoteButton.style.backgroundColor = '#F44336';
+        openVoteButton.style.backgroundColor = '';
+    }
+}
+
+// Au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+    // ... votre code existant ...
+    loadPeriodStatus();
+});
+
+
 // Fonction utilitaire pour CSRF
 function getCSRFToken() {
     return document.cookie.split('; ').find(row => row.startsWith('csrftoken'))?.split('=')[1];
