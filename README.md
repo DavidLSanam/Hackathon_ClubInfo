@@ -1,6 +1,8 @@
 # Système de vote en ligne pour l'ENSAE
 
-Une plateforme complète de gestion des élections étudiantes avec différents types de scrutins et une administration centralisée.
+Une plateforme complète (responsive) de gestion des élections étudiantes avec différents types de scrutins et une administration centralisée.
+
+# Lien d'accès de l'application : https://ensaevote.pythonanywhere.com/
 
 ## Fonctionnalités Principales
 
@@ -17,7 +19,8 @@ Une plateforme complète de gestion des élections étudiantes avec différents 
 
 **Expérience électorale**:
 - Interface de vote intuitive
-- Résultats en temps réel avec visualisations
+- Résultats en temps réel avec visualisations (par filières, classes...)
+- Vote sécurisé et anonyme
 - Confirmation de vote
 
 **Sécurité**:
@@ -30,7 +33,7 @@ Une plateforme complète de gestion des élections étudiantes avec différents 
 On commence par collecter les adresses mails de tous les étudiants et on les regroupe dans un fichier excel avec deux colonnes (classe et email). Ensuite, on génère des codes (matricules) en fonction des effectifs des classes. Ainsi lorsqu'un utilisateur se connecte à l'application et qu'il clique sur "Commencer à voter", il est redirrigé vers une page "Obtenir mon matricule", puis il entre son adresse mail fournie lors de la collecte. Si son adresse mail est reconnue, le système lui attribue automatiquement l'un des matricules générés disponibles pour sa classe. Ensuite il peut accéder à la page de connexion, entrer son matricule et se connecter.
 
 Maintenant, on distingue trois types de votes dans notre application.
-L'élève connecté peut donc depuis la page vote accéssible dans le menu, choisir le type de vote. 
+L'élève connecté peut depuis la page vote accéssible dans le menu, choisir le type de vote. 
 
 ### 1. VOTE_BUREAU_AES
 Il retrouve les différents postes disponibles et les différents candidats. Pour chaque poste il ne peut voter qu'une seule fois.
@@ -60,7 +63,7 @@ Outre l'import des emails et la génération de matricules, les administrateurs 
 
 Toutes les autres fonctionnalités sont disponibles dans l'application.
 Points de connexion disponibles :
-Matricule classique : 77188
+Matricule classique : 77189
 Matricule admin : 77187
 
-Actuellement, toutes les fonctionnalités ne sont pas opérationnelles à 100%, le développement est toujours en cours et sera finalisé sous peu au cas où l'application serait retenue.
+Actuellement, toutes les fonctionnalités ne sont pas opérationnelles à 100%, le développement est toujours en cours et sera finalisé sous peu au cas où l'application serait retenue. Mais les fonctionnalités principales sont opérationnelles (vote, candidatures, rapport d'election...)
